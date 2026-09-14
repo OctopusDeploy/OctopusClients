@@ -184,7 +184,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<EnvironmentEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new EnvironmentEditor(this).CreateOrModify(name);
+            return new EnvironmentEditor(this).CreateOrModify(name, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -195,7 +195,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<EnvironmentEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new EnvironmentEditor(this).CreateOrModify(name, description);
+            return new EnvironmentEditor(this).CreateOrModify(name, description, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -206,7 +206,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure, CancellationToken cancellationToken)
         {
-            return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure);
+            return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure, cancellationToken);
         }
     }
 }

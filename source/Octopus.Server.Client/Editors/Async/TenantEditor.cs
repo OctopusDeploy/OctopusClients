@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -15,33 +16,44 @@ namespace Octopus.Client.Editors.Async
         public TenantEditor(ITenantRepository repository)
         {
             this.repository = repository;
-            variables = new Lazy<Task<TenantVariablesEditor>>(() => new TenantVariablesEditor(repository, Instance).Load());
+            variables = new Lazy<Task<TenantVariablesEditor>>(() => new TenantVariablesEditor(repository, Instance).Load(CancellationToken.None));
         }
 
         public TenantResource Instance { get; private set; }
 
         public Task<TenantVariablesEditor> Variables => variables.Value;
 
-        public async Task<TenantEditor> CreateOrModify(string name)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TenantEditor> CreateOrModify(string name)
+            => CreateOrModify(name, CancellationToken.None);
+
+        public async Task<TenantEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = await repository.Create(new TenantResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<TenantEditor> CreateOrModify(string name, string description, string cloneId = null)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TenantEditor> CreateOrModify(string name, string description, string cloneId = null)
+            => CreateOrModify(name, description, cloneId, CancellationToken.None);
+
+        public Task<TenantEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
+            => CreateOrModify(name, description, null, cancellationToken);
+
+        public async Task<TenantEditor> CreateOrModify(string name, string description, string cloneId, CancellationToken cancellationToken)
         {
             var baseRepository = ((TenantRepository)repository).Repository;
             if (!await baseRepository.HasLinkParameter("Tenants", "clone"))
@@ -49,31 +61,35 @@ namespace Octopus.Client.Editors.Async
                     ? "Tenant Descriptions requires Octopus version 2019.8.0 or newer."
                     : "Cloning Tenants requires Octopus version 2019.8.0 or newer.", "2019.8.0");
 
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = await repository.Create(new TenantResource
                 {
                     Name = name,
                     Description = description,
-                }, new { clone = cloneId }
+                }, new { clone = cloneId }, cancellationToken
                 ).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<TenantEditor> SetLogo(string logoFilePath)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TenantEditor> SetLogo(string logoFilePath)
+            => SetLogo(logoFilePath, CancellationToken.None);
+
+        public async Task<TenantEditor> SetLogo(string logoFilePath, CancellationToken cancellationToken)
         {
             using (var stream = new FileStream(logoFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                await repository.SetLogo(Instance, Path.GetFileName(logoFilePath), stream).ConfigureAwait(false);
+                await repository.SetLogo(Instance, Path.GetFileName(logoFilePath), stream, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -109,13 +125,17 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<TenantEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TenantEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<TenantEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             if (variables.IsValueCreated)
             {
                 var vars = await variables.Value.ConfigureAwait(false);
-                await vars.Save().ConfigureAwait(false);
+                await vars.Save(cancellationToken).ConfigureAwait(false);
             }
             return this;
         }

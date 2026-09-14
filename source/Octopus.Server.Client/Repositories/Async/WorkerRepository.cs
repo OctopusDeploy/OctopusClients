@@ -101,7 +101,7 @@ namespace Octopus.Client.Repositories.Async
             WorkerPoolResource[] workerpools,
             CancellationToken cancellationToken)
         {
-            return new WorkerEditor(this).CreateOrModify(name, endpoint, workerpools);
+            return new WorkerEditor(this).CreateOrModify(name, endpoint, workerpools, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -13,7 +14,7 @@ namespace Octopus.Client.Editors.Async
         public LibraryVariableSetEditor(ILibraryVariableSetRepository repository, IVariableSetRepository variableSetRepository)
         {
             this.repository = repository;
-            variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
+            variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId, CancellationToken.None));
         }
 
         public LibraryVariableSetResource Instance { get; private set; }
@@ -22,30 +23,38 @@ namespace Octopus.Client.Editors.Async
 
         public IVariableTemplateContainerEditor<LibraryVariableSetResource> VariableTemplates => Instance;
 
-        public async Task<LibraryVariableSetEditor> CreateOrModify(string name)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<LibraryVariableSetEditor> CreateOrModify(string name)
+            => CreateOrModify(name, CancellationToken.None);
+
+        public async Task<LibraryVariableSetEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
                 Instance = await repository.Create(new LibraryVariableSetResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<LibraryVariableSetEditor> CreateOrModify(string name, string description)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<LibraryVariableSetEditor> CreateOrModify(string name, string description)
+            => CreateOrModify(name, description, CancellationToken.None);
+
+        public async Task<LibraryVariableSetEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
@@ -53,14 +62,14 @@ namespace Octopus.Client.Editors.Async
                 {
                     Name = name,
                     Description = description
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -72,13 +81,17 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<LibraryVariableSetEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<LibraryVariableSetEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<LibraryVariableSetEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             if (variables.IsValueCreated)
             {
                 var vars = await variables.Value.ConfigureAwait(false);
-                await vars.Save().ConfigureAwait(false);
+                await vars.Save(cancellationToken).ConfigureAwait(false);
             }
             return this;
         }

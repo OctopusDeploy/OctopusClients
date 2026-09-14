@@ -40,7 +40,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TagSetEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new TagSetEditor(this).CreateOrModify(name);
+            return new TagSetEditor(this).CreateOrModify(name, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TagSetEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new TagSetEditor(this).CreateOrModify(name, description);
+            return new TagSetEditor(this).CreateOrModify(name, description, cancellationToken);
         }
     }
 }

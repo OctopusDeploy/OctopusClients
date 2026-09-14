@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -18,9 +19,13 @@ namespace Octopus.Client.Editors.Async
 
         public TenantVariableResource Instance { get; private set; }
 
-        public async Task<TenantVariablesEditor> Load()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TenantVariablesEditor> Load()
+            => Load(CancellationToken.None);
+
+        public async Task<TenantVariablesEditor> Load(CancellationToken cancellationToken)
         {
-            Instance = await repository.GetVariables(tenant).ConfigureAwait(false);
+            Instance = await repository.GetVariables(tenant, cancellationToken).ConfigureAwait(false);
             return this;
         }
 
@@ -30,9 +35,13 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<TenantVariablesEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TenantVariablesEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<TenantVariablesEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.ModifyVariables(tenant, Instance).ConfigureAwait(false);
+            Instance = await repository.ModifyVariables(tenant, Instance, cancellationToken).ConfigureAwait(false);
             return this;
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -16,29 +17,37 @@ namespace Octopus.Client.Editors.Async
 
         public EnvironmentResource Instance { get; private set; }
 
-        public async Task<EnvironmentEditor> CreateOrModify(string name)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<EnvironmentEditor> CreateOrModify(string name)
+            => CreateOrModify(name, CancellationToken.None);
+
+        public async Task<EnvironmentEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = await repository.Create(new EnvironmentResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
+            => CreateOrModify(name, description, allowDynamicInfrastructure, CancellationToken.None);
+
+        public async Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = await repository.Create(new EnvironmentResource
@@ -46,7 +55,7 @@ namespace Octopus.Client.Editors.Async
                     Name = name,
                     Description = description,
                     AllowDynamicInfrastructure = allowDynamicInfrastructure
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -54,29 +63,33 @@ namespace Octopus.Client.Editors.Async
                 existing.Description = description;
                 existing.AllowDynamicInfrastructure = allowDynamicInfrastructure;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<EnvironmentEditor> CreateOrModify(string name, string description)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<EnvironmentEditor> CreateOrModify(string name, string description)
+            => CreateOrModify(name, description, CancellationToken.None);
+
+        public async Task<EnvironmentEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = await repository.Create(new EnvironmentResource
                 {
                     Name = name,
                     Description = description,
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -88,9 +101,13 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<EnvironmentEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<EnvironmentEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<EnvironmentEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             return this;
         }
     }

@@ -118,7 +118,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TenantEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new TenantEditor(this).CreateOrModify(name);
+            return new TenantEditor(this).CreateOrModify(name, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -127,7 +127,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TenantEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new TenantEditor(this).CreateOrModify(name, description);
+            return new TenantEditor(this).CreateOrModify(name, description, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TenantEditor> CreateOrModify(string name, string description, string cloneId, CancellationToken cancellationToken)
         {
-            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId, cancellationToken);
         }
     }
 }

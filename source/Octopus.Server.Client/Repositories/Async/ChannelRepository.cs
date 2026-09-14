@@ -53,7 +53,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, CancellationToken cancellationToken)
         {
-            return new ChannelEditor(this).CreateOrModify(project, name);
+            return new ChannelEditor(this).CreateOrModify(project, name, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -62,7 +62,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description, CancellationToken cancellationToken)
         {
-            return new ChannelEditor(this).CreateOrModify(project, name, description);
+            return new ChannelEditor(this).CreateOrModify(project, name, description, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

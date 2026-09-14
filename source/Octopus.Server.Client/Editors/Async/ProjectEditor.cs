@@ -24,9 +24,9 @@ namespace Octopus.Client.Editors.Async
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
-            deploymentProcess = new Lazy<Task<DeploymentProcessEditor>>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId));
+            deploymentProcess = new Lazy<Task<DeploymentProcessEditor>>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId, CancellationToken.None));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
-            variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
+            variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId, CancellationToken.None));
         }
 
         public ProjectResource Instance { get; private set; }
@@ -41,9 +41,13 @@ namespace Octopus.Client.Editors.Async
 
         public IVariableTemplateContainerEditor<ProjectResource> VariableTemplates => Instance;
 
-        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
+            => CreateOrModify(name, projectGroup, lifecycle, CancellationToken.None);
+
+        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
@@ -52,7 +56,7 @@ namespace Octopus.Client.Editors.Async
                     Name = name,
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -60,7 +64,7 @@ namespace Octopus.Client.Editors.Async
                 existing.ProjectGroupId = projectGroup.Id;
                 existing.LifecycleId = lifecycle.Id;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -74,7 +78,7 @@ namespace Octopus.Client.Editors.Async
 
         public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId, bool retainTenantConnections, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = await repository.FindByName(name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
@@ -100,11 +104,15 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ProjectEditor> SetLogo(string logoFilePath)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ProjectEditor> SetLogo(string logoFilePath)
+            => SetLogo(logoFilePath, CancellationToken.None);
+
+        public async Task<ProjectEditor> SetLogo(string logoFilePath, CancellationToken cancellationToken)
         {
             using (var stream = new FileStream(logoFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                await repository.SetLogo(Instance, Path.GetFileName(logoFilePath), stream).ConfigureAwait(false);
+                await repository.SetLogo(Instance, Path.GetFileName(logoFilePath), stream, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -122,26 +130,30 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ProjectEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ProjectEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<ProjectEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             if (channels.IsValueCreated)
             {
-                await channels.Value.SaveAll().ConfigureAwait(false);
+                await channels.Value.SaveAll(cancellationToken).ConfigureAwait(false);
             }
             if (deploymentProcess.IsValueCreated)
             {
                 var depProcess = await deploymentProcess.Value.ConfigureAwait(false);
-                await depProcess.Save().ConfigureAwait(false);
+                await depProcess.Save(cancellationToken).ConfigureAwait(false);
             }
             if (triggers.IsValueCreated)
             {
-                await triggers.Value.SaveAll().ConfigureAwait(false);
+                await triggers.Value.SaveAll(cancellationToken).ConfigureAwait(false);
             }
             if (variables.IsValueCreated)
             {
                 var vars = await variables.Value.ConfigureAwait(false);
-                await vars.Save().ConfigureAwait(false);
+                await vars.Save(cancellationToken).ConfigureAwait(false);
             }
             return this;
         }

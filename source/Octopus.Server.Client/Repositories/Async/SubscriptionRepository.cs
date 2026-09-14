@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, CancellationToken cancellationToken)
         {
-            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
+            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, cancellationToken);
         }
 
     }

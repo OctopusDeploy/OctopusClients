@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -14,16 +15,20 @@ namespace Octopus.Client.Editors.Async
             IRunbookProcessRepository runbookProcessRepository)
         {
             this.repository = repository;
-            runbookProcess = new Lazy<Task<RunbookProcessEditor>>(() => new RunbookProcessEditor(runbookProcessRepository).Load(Instance.RunbookProcessId));
+            runbookProcess = new Lazy<Task<RunbookProcessEditor>>(() => new RunbookProcessEditor(runbookProcessRepository).Load(Instance.RunbookProcessId, CancellationToken.None));
         }
 
         public RunbookResource Instance { get; private set; }
 
         public Task<RunbookProcessEditor> RunbookProcess => runbookProcess.Value;
 
-        public async Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description)
+            => CreateOrModify(project, name, description, CancellationToken.None);
+
+        public async Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(project, name).ConfigureAwait(false);
+            var existing = await repository.FindByName(project, name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
@@ -32,22 +37,26 @@ namespace Octopus.Client.Editors.Async
                     ProjectId = project.Id,
                     Name = name,
                     Description = description
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<RunbookEditor> Load(string id)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<RunbookEditor> Load(string id)
+            => Load(id, CancellationToken.None);
+
+        public async Task<RunbookEditor> Load(string id, CancellationToken cancellationToken)
         {
-            Instance = await repository.Get(id).ConfigureAwait(false);
+            Instance = await repository.Get(id, cancellationToken).ConfigureAwait(false);
             return this;
         }
 
@@ -57,13 +66,17 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<RunbookEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<RunbookEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<RunbookEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             if (runbookProcess.IsValueCreated)
             {
                 var steps = await runbookProcess.Value.ConfigureAwait(false);
-                await steps.Save().ConfigureAwait(false);
+                await steps.Save(cancellationToken).ConfigureAwait(false);
             }
             return this;
         }

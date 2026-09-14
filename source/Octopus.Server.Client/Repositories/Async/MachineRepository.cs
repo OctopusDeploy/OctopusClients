@@ -190,7 +190,7 @@ namespace Octopus.Client.Repositories.Async
             TenantedDeploymentMode? tenantedDeploymentParticipation,
             CancellationToken cancellationToken)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation);
+            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -208,7 +208,7 @@ namespace Octopus.Client.Repositories.Async
             string[] roles,
             CancellationToken cancellationToken)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles);
+            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

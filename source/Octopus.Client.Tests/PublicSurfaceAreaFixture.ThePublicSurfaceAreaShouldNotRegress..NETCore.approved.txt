@@ -1125,10 +1125,14 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Octopus.Client.Editors.Async.TAccountResource Instance { get; }
     Task<TAccountEditor> CreateOrModify(String)
+    Task<TAccountEditor> CreateOrModify(String, CancellationToken)
     Octopus.Client.Editors.Async.TAccountEditor Customize(Action<TAccountResource>)
     Task<TAccountEditor> FindByName(String)
+    Task<TAccountEditor> FindByName(String, CancellationToken)
     Task<TAccountEditor> Save()
+    Task<TAccountEditor> Save(CancellationToken)
     Task<AccountUsageResource> Usages()
+    Task<AccountUsageResource> Usages(CancellationToken)
   }
   class AmazonWebServicesAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
@@ -1151,9 +1155,13 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Task<List<ResourceGroup>> ResourceGroups()
+    Task<List<ResourceGroup>> ResourceGroups(CancellationToken)
     Task<List<AzureStorageAccount>> StorageAccounts()
+    Task<List<AzureStorageAccount>> StorageAccounts(CancellationToken)
     Task<List<WebSite>> WebSites()
+    Task<List<WebSite>> WebSites(CancellationToken)
     Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite)
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite, CancellationToken)
   }
   class AzureServicePrincipalAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
@@ -1162,9 +1170,13 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Task<List<ResourceGroup>> ResourceGroups()
+    Task<List<ResourceGroup>> ResourceGroups(CancellationToken)
     Task<List<AzureStorageAccount>> StorageAccounts()
+    Task<List<AzureStorageAccount>> StorageAccounts(CancellationToken)
     Task<List<WebSite>> WebSites()
+    Task<List<WebSite>> WebSites(CancellationToken)
     Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite)
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite, CancellationToken)
   }
   class AzureSubscriptionAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
@@ -1173,10 +1185,15 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource, CancellationToken)
     Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource, CancellationToken)
     Task<List<WebSite>> WebSites()
+    Task<List<WebSite>> WebSites(CancellationToken)
     Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource, Octopus.Client.Model.Accounts.WebSite)
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource, Octopus.Client.Model.Accounts.WebSite, CancellationToken)
     Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite)
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite, CancellationToken)
   }
   class CertificateEditor
     Octopus.Client.Editors.Async.IResourceEditor<CertificateResource, CertificateEditor>
@@ -1185,10 +1202,14 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.ICertificateRepository)
     Octopus.Client.Model.CertificateResource Instance { get; }
     Task<CertificateEditor> Create(String, String)
+    Task<CertificateEditor> Create(String, String, CancellationToken)
     Octopus.Client.Editors.Async.CertificateEditor Customize(Action<CertificateResource>)
     Task<CertificateEditor> FindByName(String)
+    Task<CertificateEditor> FindByName(String, CancellationToken)
     Task<CertificateEditor> Save()
+    Task<CertificateEditor> Save(CancellationToken)
     Task<CertificateUsageResource> Usages()
+    Task<CertificateUsageResource> Usages(CancellationToken)
   }
   class ChannelEditor
     Octopus.Client.Editors.Async.IResourceEditor<ChannelResource, ChannelEditor>
@@ -1207,9 +1228,12 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.ChannelEditor ClearRules()
     Octopus.Client.Editors.Async.ChannelEditor ClearTenantTags()
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String)
+    Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
     Octopus.Client.Editors.Async.ChannelEditor Customize(Action<ChannelResource>)
     Task<ChannelEditor> Save()
+    Task<ChannelEditor> Save(CancellationToken)
     Octopus.Client.Editors.Async.ChannelEditor SetAsDefaultChannel()
     Octopus.Client.Editors.Async.ChannelEditor UsingLifecycle(Octopus.Client.Model.LifecycleResource)
   }
@@ -1224,8 +1248,10 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.DeploymentProcessEditor Customize(Action<DeploymentProcessResource>)
     Octopus.Client.Model.DeploymentStepResource FindStep(String)
     Task<DeploymentProcessEditor> Load(String)
+    Task<DeploymentProcessEditor> Load(String, CancellationToken)
     Octopus.Client.Editors.Async.DeploymentProcessEditor RemoveStep(String)
     Task<DeploymentProcessEditor> Save()
+    Task<DeploymentProcessEditor> Save(CancellationToken)
   }
   class EnvironmentEditor
     Octopus.Client.Editors.Async.IResourceEditor<EnvironmentResource, EnvironmentEditor>
@@ -1234,10 +1260,14 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IEnvironmentRepository)
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Task<EnvironmentEditor> CreateOrModify(String)
+    Task<EnvironmentEditor> CreateOrModify(String, CancellationToken)
     Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean, CancellationToken)
     Task<EnvironmentEditor> CreateOrModify(String, String)
+    Task<EnvironmentEditor> CreateOrModify(String, String, CancellationToken)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
+    Task<EnvironmentEditor> Save(CancellationToken)
   }
   class GenericOidcAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
@@ -1262,6 +1292,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TResource Instance { get; }
     Octopus.Client.Editors.Async.TResourceBuilder Customize(Action<TResource>)
     Task<TResourceBuilder> Save()
+    Task<TResourceBuilder> Save(CancellationToken)
   }
   class LibraryVariableSetEditor
     Octopus.Client.Editors.Async.IResourceEditor<LibraryVariableSetResource, LibraryVariableSetEditor>
@@ -1272,9 +1303,12 @@ Octopus.Client.Editors.Async
     Task<VariableSetEditor> Variables { get; }
     Octopus.Client.Model.IVariableTemplateContainerEditor<LibraryVariableSetResource> VariableTemplates { get; }
     Task<LibraryVariableSetEditor> CreateOrModify(String)
+    Task<LibraryVariableSetEditor> CreateOrModify(String, CancellationToken)
     Task<LibraryVariableSetEditor> CreateOrModify(String, String)
+    Task<LibraryVariableSetEditor> CreateOrModify(String, String, CancellationToken)
     Octopus.Client.Editors.Async.LibraryVariableSetEditor Customize(Action<LibraryVariableSetResource>)
     Task<LibraryVariableSetEditor> Save()
+    Task<LibraryVariableSetEditor> Save(CancellationToken)
   }
   class LifecycleEditor
     Octopus.Client.Editors.Async.IResourceEditor<LifecycleResource, LifecycleEditor>
@@ -1286,9 +1320,12 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.LifecycleEditor AsSimplePromotionLifecycle(IEnumerable<EnvironmentResource>)
     Octopus.Client.Editors.Async.LifecycleEditor Clear()
     Task<LifecycleEditor> CreateOrModify(String)
+    Task<LifecycleEditor> CreateOrModify(String, CancellationToken)
     Task<LifecycleEditor> CreateOrModify(String, String)
+    Task<LifecycleEditor> CreateOrModify(String, String, CancellationToken)
     Octopus.Client.Editors.Async.LifecycleEditor Customize(Action<LifecycleResource>)
     Task<LifecycleEditor> Save()
+    Task<LifecycleEditor> Save(CancellationToken)
   }
   class MachineEditor
     Octopus.Client.Editors.Async.IResourceEditor<MachineResource, MachineEditor>
@@ -1297,17 +1334,24 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IMachineRepository)
     Octopus.Client.Model.MachineResource Instance { get; }
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
+    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], CancellationToken)
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>, CancellationToken)
     Octopus.Client.Editors.Async.MachineEditor Customize(Action<MachineResource>)
     Task<MachineEditor> Save()
+    Task<MachineEditor> Save(CancellationToken)
   }
   class ProjectChannelsEditor
   {
     .ctor(Octopus.Client.Repositories.Async.IChannelRepository, Octopus.Client.Model.ProjectResource)
     Task<ChannelEditor> CreateOrModify(String)
+    Task<ChannelEditor> CreateOrModify(String, CancellationToken)
     Task<ChannelEditor> CreateOrModify(String, String)
+    Task<ChannelEditor> CreateOrModify(String, String, CancellationToken)
     Task<ProjectChannelsEditor> Delete(String)
+    Task<ProjectChannelsEditor> Delete(String, CancellationToken)
     Task<ProjectChannelsEditor> SaveAll()
+    Task<ProjectChannelsEditor> SaveAll(CancellationToken)
   }
   class ProjectEditor
     Octopus.Client.Editors.Async.IResourceEditor<ProjectResource, ProjectEditor>
@@ -1321,6 +1365,7 @@ Octopus.Client.Editors.Async
     Task<VariableSetEditor> Variables { get; }
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource> VariableTemplates { get; }
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String, CancellationToken)
@@ -1328,7 +1373,9 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.ProjectEditor Customize(Action<ProjectResource>)
     Octopus.Client.Editors.Async.ProjectEditor IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
     Task<ProjectEditor> Save()
+    Task<ProjectEditor> Save(CancellationToken)
     Task<ProjectEditor> SetLogo(String)
+    Task<ProjectEditor> SetLogo(String, CancellationToken)
   }
   class ProjectGroupEditor
     Octopus.Client.Editors.Async.IResourceEditor<ProjectGroupResource, ProjectGroupEditor>
@@ -1337,9 +1384,12 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IProjectGroupRepository)
     Octopus.Client.Model.ProjectGroupResource Instance { get; }
     Task<ProjectGroupEditor> CreateOrModify(String)
+    Task<ProjectGroupEditor> CreateOrModify(String, CancellationToken)
     Task<ProjectGroupEditor> CreateOrModify(String, String)
+    Task<ProjectGroupEditor> CreateOrModify(String, String, CancellationToken)
     Octopus.Client.Editors.Async.ProjectGroupEditor Customize(Action<ProjectGroupResource>)
     Task<ProjectGroupEditor> Save()
+    Task<ProjectGroupEditor> Save(CancellationToken)
   }
   class ProjectTriggerEditor
     Octopus.Client.Editors.Async.IResourceEditor<ProjectTriggerResource, ProjectTriggerEditor>
@@ -1348,15 +1398,20 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IProjectTriggerRepository)
     Octopus.Client.Model.ProjectTriggerResource Instance { get; }
     Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
+    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource, CancellationToken)
     Octopus.Client.Editors.Async.ProjectTriggerEditor Customize(Action<ProjectTriggerResource>)
     Task<ProjectTriggerEditor> Save()
+    Task<ProjectTriggerEditor> Save(CancellationToken)
   }
   class ProjectTriggersEditor
   {
     .ctor(Octopus.Client.Repositories.Async.IProjectTriggerRepository, Octopus.Client.Model.ProjectResource)
     Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
+    Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource, CancellationToken)
     Task<ProjectTriggersEditor> Delete(String)
+    Task<ProjectTriggersEditor> Delete(String, CancellationToken)
     Task<ProjectTriggersEditor> SaveAll()
+    Task<ProjectTriggersEditor> SaveAll(CancellationToken)
   }
   class RunbookEditor
     Octopus.Client.Editors.Async.IResourceEditor<RunbookResource, RunbookEditor>
@@ -1366,9 +1421,12 @@ Octopus.Client.Editors.Async
     Octopus.Client.Model.RunbookResource Instance { get; }
     Task<RunbookProcessEditor> RunbookProcess { get; }
     Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
     Octopus.Client.Editors.Async.RunbookEditor Customize(Action<RunbookResource>)
     Task<RunbookEditor> Load(String)
+    Task<RunbookEditor> Load(String, CancellationToken)
     Task<RunbookEditor> Save()
+    Task<RunbookEditor> Save(CancellationToken)
   }
   class RunbookProcessEditor
     Octopus.Client.Editors.Async.IResourceEditor<RunbookProcessResource, RunbookProcessEditor>
@@ -1381,8 +1439,10 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.RunbookProcessEditor Customize(Action<RunbookProcessResource>)
     Octopus.Client.Model.DeploymentStepResource FindStep(String)
     Task<RunbookProcessEditor> Load(String)
+    Task<RunbookProcessEditor> Load(String, CancellationToken)
     Octopus.Client.Editors.Async.RunbookProcessEditor RemoveStep(String)
     Task<RunbookProcessEditor> Save()
+    Task<RunbookProcessEditor> Save(CancellationToken)
   }
   class SshKeyPairAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
@@ -1398,8 +1458,10 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
     Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, CancellationToken)
     Octopus.Client.Editors.Async.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Task<SubscriptionEditor> Save()
+    Task<SubscriptionEditor> Save(CancellationToken)
   }
   class TagSetEditor
     Octopus.Client.Editors.Async.IResourceEditor<TagSetResource, TagSetEditor>
@@ -1410,10 +1472,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TagSetEditor AddOrUpdateTag(String, String, String)
     Octopus.Client.Editors.Async.TagSetEditor ClearTags()
     Task<TagSetEditor> CreateOrModify(String)
+    Task<TagSetEditor> CreateOrModify(String, CancellationToken)
     Task<TagSetEditor> CreateOrModify(String, String)
+    Task<TagSetEditor> CreateOrModify(String, String, CancellationToken)
     Octopus.Client.Editors.Async.TagSetEditor Customize(Action<TagSetResource>)
     Octopus.Client.Editors.Async.TagSetEditor RemoveTag(String)
     Task<TagSetEditor> Save()
+    Task<TagSetEditor> Save(CancellationToken)
   }
   class TenantEditor
     Octopus.Client.Editors.Async.IResourceEditor<TenantResource, TenantEditor>
@@ -1426,10 +1491,15 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TenantEditor ClearTags()
     Octopus.Client.Editors.Async.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Task<TenantEditor> CreateOrModify(String)
+    Task<TenantEditor> CreateOrModify(String, CancellationToken)
     Task<TenantEditor> CreateOrModify(String, String, String)
+    Task<TenantEditor> CreateOrModify(String, String, CancellationToken)
+    Task<TenantEditor> CreateOrModify(String, String, String, CancellationToken)
     Octopus.Client.Editors.Async.TenantEditor Customize(Action<TenantResource>)
     Task<TenantEditor> Save()
+    Task<TenantEditor> Save(CancellationToken)
     Task<TenantEditor> SetLogo(String)
+    Task<TenantEditor> SetLogo(String, CancellationToken)
     Octopus.Client.Editors.Async.TenantEditor WithTag(Octopus.Client.Model.TagResource)
   }
   class TenantVariablesEditor
@@ -1440,7 +1510,9 @@ Octopus.Client.Editors.Async
     Octopus.Client.Model.TenantVariableResource Instance { get; }
     Octopus.Client.Editors.Async.TenantVariablesEditor Customize(Action<TenantVariableResource>)
     Task<TenantVariablesEditor> Load()
+    Task<TenantVariablesEditor> Load(CancellationToken)
     Task<TenantVariablesEditor> Save()
+    Task<TenantVariablesEditor> Save(CancellationToken)
     Octopus.Client.Editors.Async.TenantVariablesEditor SetLibraryVariableValue(Octopus.Client.Model.LibraryVariableSetResource, String, Octopus.Client.Model.PropertyValueResource)
     Octopus.Client.Editors.Async.TenantVariablesEditor SetProjectVariableValue(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
   }
@@ -1464,7 +1536,9 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, String)
     Octopus.Client.Editors.Async.VariableSetEditor Customize(Action<VariableSetResource>)
     Task<VariableSetEditor> Load(String)
+    Task<VariableSetEditor> Load(String, CancellationToken)
     Task<VariableSetEditor> Save()
+    Task<VariableSetEditor> Save(CancellationToken)
   }
   class VariableTemplateContainerEditor`1
   {
@@ -1487,8 +1561,10 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IWorkerRepository)
     Octopus.Client.Model.WorkerResource Instance { get; }
     Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[], CancellationToken)
     Octopus.Client.Editors.Async.WorkerEditor Customize(Action<WorkerResource>)
     Task<WorkerEditor> Save()
+    Task<WorkerEditor> Save(CancellationToken)
   }
   class WorkerPoolEditor
     Octopus.Client.Editors.Async.IResourceEditor<WorkerPoolResource, WorkerPoolEditor>
@@ -1497,9 +1573,12 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IWorkerPoolRepository)
     Octopus.Client.Model.WorkerPoolResource Instance { get; }
     Task<WorkerPoolEditor> CreateOrModify(String)
+    Task<WorkerPoolEditor> CreateOrModify(String, CancellationToken)
     Task<WorkerPoolEditor> CreateOrModify(String, String)
+    Task<WorkerPoolEditor> CreateOrModify(String, String, CancellationToken)
     Octopus.Client.Editors.Async.WorkerPoolEditor Customize(Action<WorkerPoolResource>)
     Task<WorkerPoolEditor> Save()
+    Task<WorkerPoolEditor> Save(CancellationToken)
   }
 }
 Octopus.Client.Exceptions

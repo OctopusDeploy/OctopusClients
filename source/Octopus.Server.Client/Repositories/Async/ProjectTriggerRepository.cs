@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            return await new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action).ConfigureAwait(false);
+            return await new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)

@@ -50,7 +50,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectGroupEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new ProjectGroupEditor(this).CreateOrModify(name);
+            return new ProjectGroupEditor(this).CreateOrModify(name, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectGroupEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new ProjectGroupEditor(this).CreateOrModify(name, description);
+            return new ProjectGroupEditor(this).CreateOrModify(name, description, cancellationToken);
         }
     }
 }

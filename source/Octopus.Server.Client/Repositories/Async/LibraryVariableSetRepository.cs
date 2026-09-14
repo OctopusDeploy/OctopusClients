@@ -35,7 +35,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<LibraryVariableSetEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new LibraryVariableSetEditor(this, new VariableSetRepository(Repository)).CreateOrModify(name);
+            return new LibraryVariableSetEditor(this, new VariableSetRepository(Repository)).CreateOrModify(name, cancellationToken);
         }
 
         public Task<LibraryVariableSetEditor> CreateOrModify(string name, string description)
@@ -45,7 +45,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<LibraryVariableSetEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new LibraryVariableSetEditor(this, new VariableSetRepository(Repository)).CreateOrModify(name, description);
+            return new LibraryVariableSetEditor(this, new VariableSetRepository(Repository)).CreateOrModify(name, description, cancellationToken);
         }
     }
 }

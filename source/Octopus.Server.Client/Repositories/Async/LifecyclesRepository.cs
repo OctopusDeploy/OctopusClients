@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<LifecycleEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new LifecycleEditor(this).CreateOrModify(name);
+            return new LifecycleEditor(this).CreateOrModify(name, cancellationToken);
         }
 
         public Task<LifecycleEditor> CreateOrModify(string name, string description)
@@ -40,7 +40,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<LifecycleEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new LifecycleEditor(this).CreateOrModify(name, description);
+            return new LifecycleEditor(this).CreateOrModify(name, description, cancellationToken);
         }
     }
 }

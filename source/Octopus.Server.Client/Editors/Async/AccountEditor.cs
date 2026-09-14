@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model.Accounts;
 using Octopus.Client.Model.Accounts.Usages;
@@ -19,15 +20,19 @@ namespace Octopus.Client.Editors.Async
 
         public TAccountResource Instance { get; private set; }
 
-        public async Task<TAccountEditor> CreateOrModify(string name)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TAccountEditor> CreateOrModify(string name)
+            => CreateOrModify(name, CancellationToken.None);
+
+        public async Task<TAccountEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            var existing = await Repository.FindByName(name).ConfigureAwait(false);
+            var existing = await Repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = (TAccountResource)await Repository.Create(new TAccountResource
                 {
                     Name = name
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -42,9 +47,13 @@ namespace Octopus.Client.Editors.Async
             return (TAccountEditor)this;
         }
 
-        public async Task<TAccountEditor> FindByName(string name)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<TAccountEditor> FindByName(string name)
+            => FindByName(name, CancellationToken.None);
+
+        public async Task<TAccountEditor> FindByName(string name, CancellationToken cancellationToken)
         {
-            var existing = await Repository.FindByName(name).ConfigureAwait(false);
+            var existing = await Repository.FindByName(name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 throw new ArgumentException($"An account with the name {name} could not be found");
@@ -68,15 +77,23 @@ namespace Octopus.Client.Editors.Async
             return (TAccountEditor)this;
         }
 
-        public virtual async Task<TAccountEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public virtual Task<TAccountEditor> Save()
+            => Save(CancellationToken.None);
+
+        public virtual async Task<TAccountEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = (TAccountResource)await Repository.Modify(Instance).ConfigureAwait(false);
+            Instance = (TAccountResource)await Repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             return (TAccountEditor)this;
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task<AccountUsageResource> Usages()
+            => Usages(CancellationToken.None);
+
+        public Task<AccountUsageResource> Usages(CancellationToken cancellationToken)
         {
-            return Repository.Client.Get<AccountUsageResource>(Instance.Link("Usages"));
+            return Repository.Client.Get<AccountUsageResource>(Instance.Link("Usages"), cancellationToken);
         }
     }
 }

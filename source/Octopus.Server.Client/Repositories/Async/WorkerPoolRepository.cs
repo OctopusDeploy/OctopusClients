@@ -147,7 +147,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<WorkerPoolEditor> CreateOrModify(string name, CancellationToken cancellationToken)
         {
-            return new WorkerPoolEditor(this).CreateOrModify(name);
+            return new WorkerPoolEditor(this).CreateOrModify(name, cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -156,7 +156,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<WorkerPoolEditor> CreateOrModify(string name, string description, CancellationToken cancellationToken)
         {
-            return new WorkerPoolEditor(this).CreateOrModify(name, description);
+            return new WorkerPoolEditor(this).CreateOrModify(name, description, cancellationToken);
         }
     }
 }

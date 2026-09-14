@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -16,9 +17,13 @@ namespace Octopus.Client.Editors.Async
 
         public ChannelResource Instance { get; private set; }
 
-        public async Task<ChannelEditor> CreateOrModify(ProjectResource project, string name)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name)
+            => CreateOrModify(project, name, CancellationToken.None);
+
+        public async Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(project, name).ConfigureAwait(false);
+            var existing = await repository.FindByName(project, name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
@@ -26,21 +31,25 @@ namespace Octopus.Client.Editors.Async
                 {
                     ProjectId = project.Id,
                     Name = name
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public async Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description)
+            => CreateOrModify(project, name, description, CancellationToken.None);
+
+        public async Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(project, name).ConfigureAwait(false);
+            var existing = await repository.FindByName(project, name, cancellationToken).ConfigureAwait(false);
 
             if (existing == null)
             {
@@ -49,14 +58,14 @@ namespace Octopus.Client.Editors.Async
                     ProjectId = project.Id,
                     Name = name,
                     Description = description
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -140,9 +149,13 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ChannelEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ChannelEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<ChannelEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             return this;
         }
     }

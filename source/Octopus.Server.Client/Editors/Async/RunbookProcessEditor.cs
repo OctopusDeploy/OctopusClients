@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -16,9 +17,13 @@ namespace Octopus.Client.Editors.Async
 
         public RunbookProcessResource Instance { get; private set; }
 
-        public async Task<RunbookProcessEditor> Load(string id)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<RunbookProcessEditor> Load(string id)
+            => Load(id, CancellationToken.None);
+
+        public async Task<RunbookProcessEditor> Load(string id, CancellationToken cancellationToken)
         {
-            Instance = await repository.Get(id).ConfigureAwait(false);
+            Instance = await repository.Get(id, cancellationToken).ConfigureAwait(false);
             return this;
         }
 
@@ -50,9 +55,13 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<RunbookProcessEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<RunbookProcessEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<RunbookProcessEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             return this;
         }
     }

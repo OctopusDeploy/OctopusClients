@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Triggers;
@@ -17,9 +18,13 @@ namespace Octopus.Client.Editors.Async
 
         public ProjectTriggerResource Instance { get; private set; }
 
-        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
+            => CreateOrModify(project, name, filter, action, CancellationToken.None);
+
+        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action, CancellationToken cancellationToken)
         {
-            var existing = await repository.FindByName(project, name).ConfigureAwait(false);
+            var existing = await repository.FindByName(project, name, cancellationToken).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = await repository.Create(new ProjectTriggerResource
@@ -28,14 +33,14 @@ namespace Octopus.Client.Editors.Async
                     ProjectId = project.Id,
                     Filter = filter,
                     Action = action
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Filter = filter;
                 existing.Action = action;
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
@@ -47,9 +52,13 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ProjectTriggerEditor> Save()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ProjectTriggerEditor> Save()
+            => Save(CancellationToken.None);
+
+        public async Task<ProjectTriggerEditor> Save(CancellationToken cancellationToken)
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = await repository.Modify(Instance, cancellationToken).ConfigureAwait(false);
             return this;
         }
     }
