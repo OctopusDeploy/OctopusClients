@@ -147,8 +147,8 @@ namespace Octopus.Client.Model
         /// True if the task is waiting for manual intervention.
         /// </summary>
         [JsonProperty(Order = 32)]
-        public bool HasPendingInterruptions => PendingInterruptionTypes.Count > 0;
-
+        public bool HasPendingInterruptions {get;set;}
+        
         /// <summary>
         /// If true, then the task can be used as the basis for a
         /// new task with the same effect.
@@ -186,6 +186,6 @@ namespace Octopus.Client.Model
         public List<PreconditionType> PendingPreconditionTypes { get; set; } = new();
 
         [JsonProperty(Order = 39)]
-        public bool HasPendingPreconditions => PendingPreconditionTypes.Count > 0;
+        public bool HasPendingPreconditions { get; set; }
     }
 }

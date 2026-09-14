@@ -6090,8 +6090,8 @@ Octopus.Client.Model
     Int32 EstimatedRemainingQueueDurationSeconds { get; }
     Boolean FinishedSuccessfully { get; }
     Boolean HasBeenPickedUpByProcessor { get; set; }
-    Boolean HasPendingInterruptions { get; }
-    Boolean HasPendingPreconditions { get; }
+    Boolean HasPendingInterruptions { get; set; }
+    Boolean HasPendingPreconditions { get; set; }
     Boolean HasWarningsOrErrors { get; set; }
     Boolean IsCompleted { get; }
     Nullable<DateTimeOffset> LastUpdatedTime { get; set; }
