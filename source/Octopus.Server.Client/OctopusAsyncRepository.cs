@@ -47,7 +47,7 @@ namespace Octopus.Client
     {
         internal static int SecondsToWaitForServerToStart = 60;
         private readonly AsyncLazy<RootResource> loadRootResource;
-        private readonly Lazy<Task<SpaceRootResource>> loadSpaceRootResource;
+        private readonly AsyncLazy<SpaceRootResource> loadSpaceRootResource;
         private static readonly string rootDocumentUri = "~/api";
 
         public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
@@ -126,7 +126,7 @@ namespace Octopus.Client
             UserTeams = new UserTeamsRepository(this);
             UpgradeConfiguration = new UpgradeConfigurationRepository(this);
             loadRootResource = new AsyncLazy<RootResource>(LoadRootDocumentInner);
-            loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
+            loadSpaceRootResource = new AsyncLazy<SpaceRootResource>(LoadSpaceRootDocumentInner);
             DeploymentFreezes = new DeploymentFreezeRepository(client);
             SpaceDefaultRetentionPolicies = new SpaceDefaultRetentionPolicyRepository(client);
             SshKnownHosts = new SshKnownHostRepository(this);
@@ -210,14 +210,14 @@ namespace Octopus.Client
         public async Task<bool> HasLink(string name)
         {
             var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
-            var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
+            var spaceRootDocument = await loadSpaceRootResource.Value(CancellationToken.None).ConfigureAwait(false);
             return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
         }
 
         public async Task<bool> HasLinkParameter(string linkName, string parameterName)
         {
             string link;
-            var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
+            var spaceRootDocument = await loadSpaceRootResource.Value(CancellationToken.None).ConfigureAwait(false);
 
             if (spaceRootDocument != null && spaceRootDocument.HasLink(linkName))
                 link = spaceRootDocument.Link(linkName);
@@ -237,7 +237,7 @@ namespace Octopus.Client
         public async Task<string> Link(string name)
         {
             var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
-            var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
+            var spaceRootDocument = await loadSpaceRootResource.Value(CancellationToken.None).ConfigureAwait(false);
             return spaceRootDocument != null && spaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
                 : rootDocument.Link(name);
@@ -245,7 +245,9 @@ namespace Octopus.Client
 
         public Task<RootResource> LoadRootDocument() => LoadRootDocument(CancellationToken.None);
         public Task<RootResource> LoadRootDocument(CancellationToken cancellationToken) => loadRootResource.Value(cancellationToken);
-        public Task<SpaceRootResource> LoadSpaceRootDocument() => loadSpaceRootResource.Value;
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<SpaceRootResource> LoadSpaceRootDocument() => LoadSpaceRootDocument(CancellationToken.None);
+        public Task<SpaceRootResource> LoadSpaceRootDocument(CancellationToken cancellationToken) => loadSpaceRootResource.Value(cancellationToken);
 
         private async Task<RootResource> LoadRootDocumentInner(CancellationToken cancellationToken)
         {
@@ -303,7 +305,7 @@ namespace Octopus.Client
             return rootDocument;
         }
 
-        private Task<SpaceRootResource> LoadSpaceRootDocumentInner()
+        private Task<SpaceRootResource> LoadSpaceRootDocumentInner(CancellationToken cancellationToken)
         {
             return Scope.Apply(LoadSpaceRootResourceFor,
                 () => Task.FromResult<SpaceRootResource>(null),
@@ -317,12 +319,12 @@ namespace Octopus.Client
 
             async Task<SpaceRootResource> LoadSpaceRootResourceFor(SpaceResource space)
             {
-                return await Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new { space.Id }).ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new { space.Id }, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             async Task<SpaceResource> TryGetDefaultSpace()
             {
-                var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
+                var rootDocument = await loadRootResource.Value(cancellationToken).ConfigureAwait(false);
                 var spacesIsSupported = rootDocument.HasLink("Spaces");
                 if (!spacesIsSupported)
                 {
@@ -330,8 +332,8 @@ namespace Octopus.Client
                 }
                 try
                 {
-                    var currentUser = await Client.Get<UserResource>(rootDocument.Links["CurrentUser"]).ConfigureAwait(false);
-                    var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
+                    var currentUser = await Client.Get<UserResource>(rootDocument.Links["CurrentUser"], cancellationToken).ConfigureAwait(false);
+                    var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"], cancellationToken).ConfigureAwait(false);
                     return userSpaces.SingleOrDefault(s => s.IsDefault);
                 }
                 catch (OctopusSecurityException)

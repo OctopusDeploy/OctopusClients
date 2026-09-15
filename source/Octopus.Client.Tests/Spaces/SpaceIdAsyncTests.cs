@@ -17,9 +17,9 @@ namespace Octopus.Client.Tests.Spaces
         IOctopusAsyncClient SetupAsyncClient()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
-            client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource { Id = "Spaces-1", IsDefault = true, Links = new LinkCollection { { "SpaceHome", String.Empty } } } });
-            client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
+            client.Get<UserResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
+            client.Get<SpaceResource[]>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new[] { new SpaceResource { Id = "Spaces-1", IsDefault = true, Links = new LinkCollection { { "SpaceHome", String.Empty } } } });
+            client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>()).Returns(new SpaceRootResource());
             client.Get<RootResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",

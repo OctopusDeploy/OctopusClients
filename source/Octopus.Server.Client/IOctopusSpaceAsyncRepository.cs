@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -53,6 +55,8 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<SpaceRootResource> LoadSpaceRootDocument();
+        Task<SpaceRootResource> LoadSpaceRootDocument(CancellationToken cancellationToken);
     }
 }

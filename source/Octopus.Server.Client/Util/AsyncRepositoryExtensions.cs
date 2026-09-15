@@ -13,13 +13,13 @@ namespace Octopus.Client.Util;
 internal static class AsyncRepositoryExtensions
 {
     public static async Task<List<TResource>> FindByNameIdOrSlugs<TResource, TRepository>(this TRepository repository,
-        string[] searchIdentifiers, Func<string[], string> exceptionMessageGenerator = null)
+        string[] searchIdentifiers, CancellationToken cancellationToken, Func<string[], string> exceptionMessageGenerator = null)
         where TRepository : IFindBySlug<TResource>, IFindByName<TResource>, IGet<TResource>
         where TResource : IResource, INamedResource, IHaveSlugResource
     {
         List<TResource> resources = new();
 
-        var resourcesByName = await repository.FindByNames(searchIdentifiers).ConfigureAwait(false);
+        var resourcesByName = await repository.FindByNames(searchIdentifiers, cancellationToken).ConfigureAwait(false);
         resources.AddRange(resourcesByName);
 
         var missing = searchIdentifiers
@@ -27,7 +27,7 @@ internal static class AsyncRepositoryExtensions
             .ToArray();
 
         // use the missing names to try and find by slug
-        var resourcesBySlug = await repository.FindBySlugs(missing, CancellationToken.None)
+        var resourcesBySlug = await repository.FindBySlugs(missing, cancellationToken)
             .ConfigureAwait(false);
         resources.AddRange(resourcesBySlug);
 
@@ -36,7 +36,7 @@ internal static class AsyncRepositoryExtensions
             .ToArray();
 
         // any other missing slugs/names could be Id's, so look again
-        var resourcesByIds = await repository.Get(missing).ConfigureAwait(false);
+        var resourcesByIds = await repository.Get(cancellationToken, missing).ConfigureAwait(false);
         resources.AddRange(resourcesByIds);
 
         missing = missing

@@ -28,7 +28,7 @@ namespace Octopus.Client.Tests.Operations
             clientFactory = Substitute.For<IOctopusClientFactory>();
             client = Substitute.For<IOctopusAsyncClient>();
             syncClient = Substitute.For<IOctopusClient>();
-            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
+            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>(), Arg.Any<CancellationToken>(), Arg.Any<OctopusClientOptions>()).Returns(client);
             clientFactory.CreateClient(Arg.Any<OctopusServerEndpoint>()).Returns(syncClient);
             operation = new RegisterWorkerOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");

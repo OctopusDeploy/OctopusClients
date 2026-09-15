@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<T> Get<T>(CancellationToken cancellationToken) where T : class, IResource, new()
         {
             var instance = new T();
-            var configurationItem = await GetConfigurationItem(instance).ConfigureAwait(false);
+            var configurationItem = await GetConfigurationItem(instance, cancellationToken).ConfigureAwait(false);
 
             return await repository.Client.Get<T>(configurationItem.Link("Values"), cancellationToken).ConfigureAwait(false);
         }
@@ -49,13 +49,13 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<T> Modify<T>(T configurationResource, CancellationToken cancellationToken) where T : class, IResource, new()
         {
-            var configurationItem = await GetConfigurationItem(configurationResource).ConfigureAwait(false);
+            var configurationItem = await GetConfigurationItem(configurationResource, cancellationToken).ConfigureAwait(false);
             return await repository.Client.Update(configurationItem.Link("Values"), configurationResource, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<ConfigurationItemResource> GetConfigurationItem(IResource instance)
+        private async Task<ConfigurationItemResource> GetConfigurationItem(IResource instance, CancellationToken cancellationToken)
         {
-            return await repository.Client.Get<ConfigurationItemResource>(await repository.Link(collectionLinkName).ConfigureAwait(false), new { instance.Id }).ConfigureAwait(false);
+            return await repository.Client.Get<ConfigurationItemResource>(await repository.Link(collectionLinkName).ConfigureAwait(false), new { instance.Id }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

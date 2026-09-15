@@ -121,7 +121,7 @@ namespace Octopus.Client.Repositories.Async
                 user = filterByUserId,
                 regarding = regardingDocumentId,
                 @internal = includeInternalEvents.ToString()
-            })).ConfigureAwait(false);
+            }), CancellationToken.None).ConfigureAwait(false);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

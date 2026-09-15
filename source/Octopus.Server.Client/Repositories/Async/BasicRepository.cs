@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
-        protected virtual Task CheckSpaceResource(IHaveSpaceResource spaceResource)
+        protected virtual Task CheckSpaceResource(IHaveSpaceResource spaceResource, CancellationToken cancellationToken)
         {
             return Repository.Scope.Apply(
                 whenSpaceScoped: space =>
@@ -51,19 +51,19 @@ namespace Octopus.Client.Repositories.Async
                 whenSystemScoped: () => Task.CompletedTask,
                 whenUnspecifiedScope: async () =>
                 {
-                    var spaceRoot = await Repository.LoadSpaceRootDocument().ConfigureAwait((false));
+                    var spaceRoot = await Repository.LoadSpaceRootDocument(cancellationToken).ConfigureAwait(false);
                     var isDefaultSpaceFound = spaceRoot != null;
 
-                    if (!isDefaultSpaceFound && await ServerSupportsSpaces().ConfigureAwait(false))
+                    if (!isDefaultSpaceFound && await ServerSupportsSpaces(cancellationToken).ConfigureAwait(false))
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
         }
 
-        private async Task<bool> ServerSupportsSpaces()
+        private async Task<bool> ServerSupportsSpaces(CancellationToken cancellationToken)
         {
-            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
+            var rootDocument = await Repository.LoadRootDocument(cancellationToken).ConfigureAwait(false);
 
             var spacesIsSupported = rootDocument.HasLink("Spaces");
 
@@ -76,10 +76,10 @@ namespace Octopus.Client.Repositories.Async
             hasMinimumRequiredVersion = true;
         }
 
-        private async Task AssertSpaceIdMatchesResource(TResource resource)
+        private async Task AssertSpaceIdMatchesResource(TResource resource, CancellationToken cancellationToken)
         {
             if (resource is IHaveSpaceResource spaceResource)
-                await CheckSpaceResource(spaceResource).ConfigureAwait(false);
+                await CheckSpaceResource(spaceResource, cancellationToken).ConfigureAwait(false);
         }
 
         protected async Task<bool> ThrowIfServerVersionIsNotCompatible(CancellationToken cancellationToken)
@@ -120,7 +120,7 @@ namespace Octopus.Client.Repositories.Async
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
+            await AssertSpaceIdMatchesResource(resource, cancellationToken).ConfigureAwait(false);
             var link = await ResolveLink(cancellationToken).ConfigureAwait(false);
             await EnrichSpaceId(resource).ConfigureAwait(false);
             return await Client.Create(link, resource, pathParameters, cancellationToken).ConfigureAwait(false);
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories.Async
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
+            await AssertSpaceIdMatchesResource(resource, cancellationToken).ConfigureAwait(false);
             return await Client.Update(resource.Links["Self"], resource, null, cancellationToken).ConfigureAwait(false);
         }
 
@@ -149,7 +149,7 @@ namespace Octopus.Client.Repositories.Async
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
+            await AssertSpaceIdMatchesResource(resource, cancellationToken).ConfigureAwait(false);
 
             await Client.Delete(resource.Links["Self"], cancellationToken).ConfigureAwait(false);
         }

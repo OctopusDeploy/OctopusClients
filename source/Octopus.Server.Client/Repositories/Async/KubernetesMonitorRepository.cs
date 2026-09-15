@@ -38,6 +38,6 @@ public class KubernetesMonitorRepository(IOctopusAsyncRepository repository) : I
     public async Task Delete(DeleteKubernetesMonitorByIdCommand request, CancellationToken cancellationToken)
     {
         var link = await repository.Link("KubernetesMonitors").ConfigureAwait(false);
-        await repository.Client.Delete(link, request, cancellationToken);
+        await repository.Client.Delete(link, request, resource: null, cancellationToken);
     }
 }

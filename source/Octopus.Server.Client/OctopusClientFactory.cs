@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -32,11 +33,22 @@ namespace Octopus.Client
         /// <param name="serverEndpoint">The server endpoint.</param>
         /// <param name="options">The configuration options for this client instance.</param>
         /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default)
+            => CreateAsyncClient(serverEndpoint, CancellationToken.None, options);
+
+        /// <summary>
+        ///     Creates an instance of the client.
+        /// </summary>
+        /// <param name="serverEndpoint">The server endpoint.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="options">The configuration options for this client instance.</param>
+        /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
+        public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, CancellationToken cancellationToken, OctopusClientOptions options = default)
         {
             options ??= new OctopusClientOptions();
             var requestingTool = DetermineRequestingTool();
-            return OctopusAsyncClient.Create(serverEndpoint, options, requestingTool);
+            return OctopusAsyncClient.Create(serverEndpoint, cancellationToken, options, requestingTool);
         }
 
         internal static HttpClient BuildHttpClient(HttpMessageHandler handler, OctopusClientOptions clientOptions, string requestingTool, bool disposeHandler = true, RateLimitPacer rateLimitPacer = null)

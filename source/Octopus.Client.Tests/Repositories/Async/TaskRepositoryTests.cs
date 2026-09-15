@@ -108,14 +108,14 @@ namespace Octopus.Client.Tests.Repositories.Async
 
         void SetupClient(IOctopusAsyncClient client)
         {
-            client.Repository.LoadRootDocument().Returns(new RootResource()
+            client.Repository.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
                 Version = "2099.0.0",
                 Links = LinkCollection.Self("/api")
                     .Add("CurrentUser", "/api/users/me")
             });
-            client.Get<UserResource>(Arg.Any<string>()).Throws(new OctopusSecurityException(401, "Test"));
+            client.Get<UserResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Throws(new OctopusSecurityException(401, "Test"));
         }
     }
 }

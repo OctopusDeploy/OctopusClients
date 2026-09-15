@@ -124,6 +124,7 @@ Octopus.Client
   interface IOctopusClientFactory
   {
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, CancellationToken, Octopus.Client.OctopusClientOptions)
     Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
   }
   interface IOctopusCommonAsyncRepository
@@ -211,6 +212,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
     Task<SpaceRootResource> LoadSpaceRootDocument()
+    Task<SpaceRootResource> LoadSpaceRootDocument(CancellationToken)
   }
   interface IOctopusSpaceRepository
     Octopus.Client.IOctopusCommonRepository
@@ -322,6 +324,7 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, CancellationToken, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
@@ -461,6 +464,7 @@ Octopus.Client
     Task<RootResource> LoadRootDocument()
     Task<RootResource> LoadRootDocument(CancellationToken)
     Task<SpaceRootResource> LoadSpaceRootDocument()
+    Task<SpaceRootResource> LoadSpaceRootDocument(CancellationToken)
   }
   class OctopusClient
     Octopus.Client.IHttpOctopusClient
@@ -507,6 +511,7 @@ Octopus.Client
   {
     .ctor()
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, CancellationToken, Octopus.Client.OctopusClientOptions)
     Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
   }
   class OctopusClientOptions
@@ -9423,8 +9428,11 @@ Octopus.Client.Operations
     void Execute(Octopus.Client.OctopusRepository)
     void Execute(Octopus.Client.IOctopusSpaceRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
+    Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint, CancellationToken)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository, CancellationToken)
     Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository, CancellationToken)
   }
   interface IRegisterWorkerOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -9476,6 +9484,7 @@ Octopus.Client.Operations
     String[] TenantTags { get; set; }
     void Execute(Octopus.Client.IOctopusSpaceRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository, CancellationToken)
   }
   abstract class RegisterMachineOperationBase
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -9494,8 +9503,11 @@ Octopus.Client.Operations
     void Execute(Octopus.Client.OctopusRepository)
     void Execute(Octopus.Client.IOctopusSpaceRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
+    Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint, CancellationToken)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository, CancellationToken)
     Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository, CancellationToken)
   }
   class RegisterWorkerOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -9508,6 +9520,7 @@ Octopus.Client.Operations
     String[] WorkerPools { get; set; }
     void Execute(Octopus.Client.IOctopusSpaceRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository, CancellationToken)
   }
 }
 Octopus.Client.Repositories

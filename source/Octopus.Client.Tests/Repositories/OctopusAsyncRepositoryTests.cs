@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using NSubstitute;
 using Octopus.Client.Extensions;
 using Octopus.Client.Model;
@@ -14,7 +15,7 @@ namespace Octopus.Client.Tests.Repositories
         public void AllPropertiesAreNotNullExceptDelayInitialised()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.Repository.LoadRootDocument().Returns(new RootResource
+            client.Repository.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(new RootResource
             {
                 Version = "2099.0.0"
             });

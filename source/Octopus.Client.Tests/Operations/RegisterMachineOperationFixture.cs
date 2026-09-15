@@ -64,7 +64,7 @@ namespace Octopus.Client.Tests.Operations
             };
 
             client.Get<RootResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(rootDocument);
-            client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(spaceRootDocument);
+            client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>()).Returns(spaceRootDocument);
 
             repository = new OctopusAsyncRepository(client, RepositoryScope.ForSpace(someSpace));
 
@@ -77,7 +77,7 @@ namespace Octopus.Client.Tests.Operations
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachinePolicyResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachinePolicyResource>, bool>>()(machinePolicies));
 
-            client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(Arg.Any<string>(), Arg.Any<object>())
+            client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>())
                 .Returns(ci =>
                 {
                     var items = environments.Items

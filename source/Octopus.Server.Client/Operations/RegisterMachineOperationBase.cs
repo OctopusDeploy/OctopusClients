@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
@@ -136,13 +137,24 @@ namespace Octopus.Client.Operations
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public async Task ExecuteAsync(OctopusServerEndpoint serverEndpoint)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task ExecuteAsync(OctopusServerEndpoint serverEndpoint)
+            => ExecuteAsync(serverEndpoint, CancellationToken.None);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        public async Task ExecuteAsync(OctopusServerEndpoint serverEndpoint, CancellationToken cancellationToken)
         {
-            using (var client = await clientFactory.CreateAsyncClient(serverEndpoint).ConfigureAwait(false))
+            using (var client = await clientFactory.CreateAsyncClient(serverEndpoint, cancellationToken).ConfigureAwait(false))
             {
                 var repository = new OctopusAsyncRepository(client);
 
-                await ExecuteAsync(repository).ConfigureAwait(false);
+                await ExecuteAsync(repository, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -152,9 +164,20 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public async Task ExecuteAsync(OctopusAsyncRepository repository)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task ExecuteAsync(OctopusAsyncRepository repository)
+            => ExecuteAsync(repository, CancellationToken.None);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy server repository.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        public async Task ExecuteAsync(OctopusAsyncRepository repository, CancellationToken cancellationToken)
         {
-            await ExecuteAsync((IOctopusSpaceAsyncRepository)repository).ConfigureAwait(false);
+            await ExecuteAsync((IOctopusSpaceAsyncRepository)repository, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -163,27 +186,44 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public abstract Task ExecuteAsync(IOctopusSpaceAsyncRepository repository);
 
-        protected async Task<MachinePolicyResource> GetMachinePolicy(IOctopusSpaceAsyncRepository repository)
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy server repository.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        /// <remarks>
+        /// Defaults to the token-less overload so that a type compiled against an earlier
+        /// version still loads and still runs its own implementation.
+        /// </remarks>
+        public virtual Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
+#pragma warning disable CS0618
+            => ExecuteAsync(repository);
+#pragma warning restore CS0618
+
+        protected async Task<MachinePolicyResource> GetMachinePolicy(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
 
             var machinePolicy = default(MachinePolicyResource);
             if (!string.IsNullOrEmpty(MachinePolicy))
             {
-                machinePolicy = await repository.MachinePolicies.FindByName(MachinePolicy).ConfigureAwait(false);
+                machinePolicy = await repository.MachinePolicies.FindByName(MachinePolicy, cancellationToken).ConfigureAwait(false);
                 if (machinePolicy == null)
                     throw new ArgumentException(CouldNotFindByNameMessage("machine policy", MachinePolicy));
             }
             return machinePolicy;
         }
 
-        protected async Task<ProxyResource> GetProxy(IOctopusSpaceAsyncRepository repository)
+        protected async Task<ProxyResource> GetProxy(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             var proxy = default(ProxyResource);
             if (!string.IsNullOrEmpty(ProxyName))
             {
-                proxy = await repository.Proxies.FindByName(ProxyName).ConfigureAwait(false);
+                proxy = await repository.Proxies.FindByName(ProxyName, cancellationToken).ConfigureAwait(false);
                 if (proxy == null)
                     throw new ArgumentException(CouldNotFindByNameMessage("proxy name", ProxyName));
             }

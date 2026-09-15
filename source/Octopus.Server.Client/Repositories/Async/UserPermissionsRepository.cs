@@ -50,7 +50,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<UserPermissionSetResource> GetConfiguration(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            return await Client.Get<UserPermissionSetResource>(user.Link("PermissionsConfiguration"), GetAdditionalQueryParameters()).ConfigureAwait(false);
+            return await Client.Get<UserPermissionSetResource>(user.Link("PermissionsConfiguration"), GetAdditionalQueryParameters(), CancellationToken.None).ConfigureAwait(false);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -77,18 +78,42 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task ExecuteAsync(OctopusServerEndpoint serverEndpoint);
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
+        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task ExecuteAsync(OctopusServerEndpoint serverEndpoint, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task ExecuteAsync(OctopusAsyncRepository repository);
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task ExecuteAsync(OctopusAsyncRepository repository, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy repository.</param>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task ExecuteAsync(IOctopusSpaceAsyncRepository repository);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy repository.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken);
     }
 }

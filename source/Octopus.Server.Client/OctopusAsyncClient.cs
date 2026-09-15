@@ -148,49 +148,53 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
         }
 
-        public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public static Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
+            => Create(serverEndpoint, CancellationToken.None, options);
+
+        public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, CancellationToken cancellationToken, OctopusClientOptions options = null)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true).ConfigureAwait(false);
+                return await Create(serverEndpoint, cancellationToken, options, true).ConfigureAwait(false);
             }
             catch (PlatformNotSupportedException ex)
             {
                 if (options?.IgnoreSslErrors ?? false)
                     throw new Exception("This platform does not support ignoring SSL certificate errors", ex);
-                return await Create(serverEndpoint, options, false).ConfigureAwait(false);
+                return await Create(serverEndpoint, cancellationToken, options, false).ConfigureAwait(false);
             }
 #else
-            return await Create(serverEndpoint, options, false).ConfigureAwait(false);
+            return await Create(serverEndpoint, cancellationToken, options, false).ConfigureAwait(false);
 #endif
         }
 
-        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, string requestingTool)
+        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, CancellationToken cancellationToken, OctopusClientOptions options, string requestingTool)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true, requestingTool);
+                return await Create(serverEndpoint, cancellationToken, options, true, requestingTool);
             }
             catch (PlatformNotSupportedException ex)
             {
                 if (options?.IgnoreSslErrors ?? false)
                     throw new Exception("This platform does not support ignoring SSL certificate errors", ex);
-                return await Create(serverEndpoint, options, false, requestingTool);
+                return await Create(serverEndpoint, cancellationToken, options, false, requestingTool);
             }
 #else
-            return await Create(serverEndpoint, options, false, requestingTool);
+            return await Create(serverEndpoint, cancellationToken, options, false, requestingTool);
 #endif
         }
 
-        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, CancellationToken cancellationToken, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
             options ??= new OctopusClientOptions();
             var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool);
             // User used to see this exception 
             // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
-            await client.Repository.LoadRootDocument().ConfigureAwait(false);
+            await client.Repository.LoadRootDocument(cancellationToken).ConfigureAwait(false);
             return client;
         }
 
@@ -252,7 +256,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// that it is only requested once for
         /// the current <see cref="IOctopusAsyncClient" />.
         /// </summary>
-        public RootResource RootDocument => Repository.LoadRootDocument().GetAwaiter().GetResult();
+        public RootResource RootDocument => Repository.LoadRootDocument(CancellationToken.None).GetAwaiter().GetResult();
 
         /// <summary>
         /// Occurs when a request is about to be sent.

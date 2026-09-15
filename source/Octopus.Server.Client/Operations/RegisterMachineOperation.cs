@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -194,18 +195,29 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="InvalidRegistrationArgumentsException">
         /// </exception>
-        public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public override Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
+            => ExecuteAsync(repository, CancellationToken.None);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy server repository.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="InvalidRegistrationArgumentsException">
+        /// </exception>
+        public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
-            var machine = await GetMachine(repository).ConfigureAwait(false);
-            var proxy = await GetProxy(repository).ConfigureAwait(false);
+            var machine = await GetMachine(repository, cancellationToken).ConfigureAwait(false);
+            var proxy = await GetProxy(repository, cancellationToken).ConfigureAwait(false);
 
             if (!IsExistingMachine(machine) || AllowOverwrite)
             {
-                var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
-                await ValidateTenantTags(repository).ConfigureAwait(false);
+                var machinePolicy = GetMachinePolicy(repository, cancellationToken).ConfigureAwait(false);
+                await ValidateTenantTags(repository, cancellationToken).ConfigureAwait(false);
                 ApplyBaseChanges(machine, await machinePolicy, proxy);
-                var selectedEnvironments = await GetEnvironmentIds(repository).ConfigureAwait(false);
-                var tenants = await GetTenants(repository).ConfigureAwait(false);
+                var selectedEnvironments = await GetEnvironmentIds(repository, cancellationToken).ConfigureAwait(false);
+                var tenants = await GetTenants(repository, cancellationToken).ConfigureAwait(false);
                 ApplyDeploymentTargetChanges(machine, selectedEnvironments, tenants);
             }
             else
@@ -213,7 +225,7 @@ namespace Octopus.Client.Operations
                 PrepareMachineForReRegistration(machine, proxy?.Id);
             }
 
-            await ModifyOrCreateMachine(repository, machine).ConfigureAwait(false);
+            await ModifyOrCreateMachine(repository, machine, cancellationToken).ConfigureAwait(false);
         }
 
         protected virtual void PrepareMachineForReRegistration(MachineResource machineResource, string proxyId)
@@ -222,33 +234,33 @@ namespace Octopus.Client.Operations
                 $"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
         }
 
-        static async Task ModifyOrCreateMachine(IOctopusSpaceAsyncRepository repository, MachineResource machine)
+        static async Task ModifyOrCreateMachine(IOctopusSpaceAsyncRepository repository, MachineResource machine, CancellationToken cancellationToken)
         {
             if (IsExistingMachine(machine))
-                await repository.Machines.Modify(machine).ConfigureAwait(false);
+                await repository.Machines.Modify(machine, cancellationToken).ConfigureAwait(false);
             else
-                await repository.Machines.Create(machine).ConfigureAwait(false);
+                await repository.Machines.Create(machine, cancellationToken).ConfigureAwait(false);
         }
 
-        async Task<List<TenantResource>> GetTenants(IOctopusSpaceAsyncRepository repository)
+        async Task<List<TenantResource>> GetTenants(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             List<TenantResource> tenants = new();
             if (Tenants is not null && Tenants.Any())
             {
                 var tenantsByNameIdOrSlug =
                     await repository.Tenants.FindByNameIdOrSlugs<TenantResource, IAsyncTenantRepository>(
-                        Tenants, missing => CouldNotFindByMultipleMessage("tenant", missing.ToArray()));
+                        Tenants, cancellationToken, missing => CouldNotFindByMultipleMessage("tenant", missing.ToArray()));
                 tenants.AddRange(tenantsByNameIdOrSlug);
             }
             return tenants;
         }
 
-        async Task ValidateTenantTags(IOctopusSpaceAsyncRepository repository)
+        async Task ValidateTenantTags(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             if (TenantTags == null || !TenantTags.Any())
                 return;
 
-            var tagSets = await repository.TagSets.FindAll().ConfigureAwait(false);
+            var tagSets = await repository.TagSets.FindAll(cancellationToken).ConfigureAwait(false);
             var missingTags = TenantTags.Where(tt =>
                     !tagSets.Any(ts =>
                         ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase))))
@@ -258,12 +270,12 @@ namespace Octopus.Client.Operations
                 throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
-        async Task<List<string>> GetEnvironmentIds(IOctopusSpaceAsyncRepository repository)
+        async Task<List<string>> GetEnvironmentIds(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             List<string> environmentIds = new();
             if (EnvironmentNames is not null && EnvironmentNames.Any())
             {
-                var envsByName = await repository.Environments.FindByNames(EnvironmentNames).ConfigureAwait(false);
+                var envsByName = await repository.Environments.FindByNames(EnvironmentNames, cancellationToken).ConfigureAwait(false);
                 environmentIds.AddRange(envsByName.Select(e => e.Id));
 
                 //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
@@ -277,34 +289,34 @@ namespace Octopus.Client.Operations
 
             if (Environments is not null && Environments.Any())
             {
-                environmentIds.AddRange(await ResolveEnvironmentIdsV2Async(repository, Environments).ConfigureAwait(false));
+                environmentIds.AddRange(await ResolveEnvironmentIdsV2Async(repository, Environments, cancellationToken).ConfigureAwait(false));
             }
 
             return environmentIds;
         }
 
-        static async Task<List<string>> ResolveEnvironmentIdsV2Async(IOctopusSpaceAsyncRepository repository, string[] identifiers)
+        static async Task<List<string>> ResolveEnvironmentIdsV2Async(IOctopusSpaceAsyncRepository repository, string[] identifiers, CancellationToken cancellationToken)
         {
             try
             {
-                return await GetEnvironmentsV2.FindIdsAsync(repository, identifiers, CouldNotFindByMultipleMessage).ConfigureAwait(false);
+                return await GetEnvironmentsV2.FindIdsAsync(repository, identifiers, CouldNotFindByMultipleMessage, cancellationToken).ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
                 var fallback = await repository.Environments
                     .FindByNameIdOrSlugs<EnvironmentResource, IAsyncEnvironmentRepository>(
-                        identifiers, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
+                        identifiers, cancellationToken, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
                     .ConfigureAwait(false);
                 return fallback.Select(e => e.Id).ToList();
             }
         }
 
-        async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository)
+        async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             var existing = default(MachineResource);
             try
             {
-                existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
+                existing = await repository.Machines.FindByName(MachineName, cancellationToken).ConfigureAwait(false);
             }
             catch (OctopusDeserializationException)
             {
@@ -343,7 +355,7 @@ namespace Octopus.Client.Operations
                 return MatchEnvironmentIdentifiers(all.Items, identifiers, missingErrorGenerator);
             }
 
-            public static async Task<List<string>> FindIdsAsync(IOctopusSpaceAsyncRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
+            public static async Task<List<string>> FindIdsAsync(IOctopusSpaceAsyncRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator, CancellationToken cancellationToken)
             {
                 var spaceId = ResolveSpaceId(repository.Scope);
                 var all = await repository.Client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(
@@ -353,7 +365,8 @@ namespace Octopus.Client.Operations
                         spaceId,
                         skip = 0,
                         take = int.MaxValue
-                    });
+                    },
+                    cancellationToken: cancellationToken);
 
                 return MatchEnvironmentIdentifiers(all.Items, identifiers, missingErrorGenerator);
             }

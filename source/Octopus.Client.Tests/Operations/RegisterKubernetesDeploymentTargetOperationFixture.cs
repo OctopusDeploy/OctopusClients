@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Octopus.Client;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
@@ -31,7 +32,7 @@ namespace Octopus.Client.Tests.Operations
         {
             clientFactory = Substitute.For<IOctopusClientFactory>();
             client = Substitute.For<IOctopusAsyncClient>();
-            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
+            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>(), Arg.Any<CancellationToken>(), Arg.Any<OctopusClientOptions>()).Returns(client);
             operation = new RegisterKubernetesDeploymentTargetOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");
 

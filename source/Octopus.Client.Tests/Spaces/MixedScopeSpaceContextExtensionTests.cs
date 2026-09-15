@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -17,7 +18,7 @@ namespace Octopus.Client.Tests.Spaces
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
             repository.Scope.Returns(scope);
-            repository.LoadRootDocument().Returns(GetRootResource());
+            repository.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(GetRootResource());
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             Action switchContext = () => teamRepo.UsingContext(SpaceContext.AllSpaces());
             switchContext.Should().Throw<SpaceContextSwitchException>();
@@ -28,7 +29,7 @@ namespace Octopus.Client.Tests.Spaces
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
             repository.Scope.Returns(RepositoryScope.Unspecified());
-            repository.LoadRootDocument().Returns(GetRootResource());
+            repository.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(GetRootResource());
             repository.Teams.UsingContext(SpaceContext.AllSpaces());
         }
 

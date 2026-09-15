@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -28,7 +29,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             repoForMixedScopedResource = new TestMixedResourceAsyncRepository(mockRepo, "");
             repoForSystemScopedResource = new TestSystemResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
 
-            mockRepo.LoadRootDocument().Returns(GetRootResource());
+            mockRepo.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(GetRootResource());
 
             someSpace = new SpaceResource
             {

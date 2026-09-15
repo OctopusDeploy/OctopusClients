@@ -88,7 +88,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 try
                 {
-                    var deltaResult = await AttemptDeltaPush(fileName, contents, overwriteMode).ConfigureAwait(false);
+                    var deltaResult = await AttemptDeltaPush(fileName, contents, overwriteMode, cancellationToken).ConfigureAwait(false);
                     if (deltaResult != null)
                         return deltaResult;
                 }
@@ -96,8 +96,12 @@ namespace Octopus.Client.Repositories.Async
                 {
                     Logger.Info("Delta push timed out: " + ex.Message);
 
-                    var verificationResult = await VerifyTransfer(fileName, contents).ConfigureAwait(false);
+                    var verificationResult = await VerifyTransfer(fileName, contents, cancellationToken).ConfigureAwait(false);
                     if (verificationResult != null) return verificationResult;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
                 }
                 catch (Exception ex) when (!(ex is OctopusValidationException))
                 {
@@ -136,14 +140,14 @@ namespace Octopus.Client.Repositories.Async
             }
             catch (TimeoutException)
             {
-                var verificationResult = await VerifyTransfer(fileName, contents);
+                var verificationResult = await VerifyTransfer(fileName, contents, cancellationToken);
                 if (verificationResult != null) return verificationResult;
 
                 throw;
             }
         }
 
-        private async Task<PackageFromBuiltInFeedResource> VerifyTransfer(string fileName, Stream contents)
+        private async Task<PackageFromBuiltInFeedResource> VerifyTransfer(string fileName, Stream contents, CancellationToken cancellationToken)
         {
             Logger.Info("Trying to find out whether the transfer worked");
 
@@ -154,16 +158,16 @@ namespace Octopus.Client.Repositories.Async
                 return null;
             }
 
-            var uploadedPackage = await TryFindPackage(packageId, version);
+            var uploadedPackage = await TryFindPackage(packageId, version, cancellationToken);
 
             return PackageContentComparer.AreSame(uploadedPackage, contents, Logger) ? uploadedPackage : null;
         }
 
-        private async Task<PackageFromBuiltInFeedResource> TryFindPackage(string packageId, SemanticVersion version)
+        private async Task<PackageFromBuiltInFeedResource> TryFindPackage(string packageId, SemanticVersion version, CancellationToken cancellationToken)
         {
             try
             {
-                return await repository.BuiltInPackageRepository.GetPackage(packageId, version.ToString()).ConfigureAwait(false);
+                return await repository.BuiltInPackageRepository.GetPackage(packageId, version.ToString(), cancellationToken).ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -171,7 +175,7 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
+        private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode, CancellationToken cancellationToken)
         {
             if (!await repository.HasLink("PackageDeltaSignature").ConfigureAwait(false))
             {
@@ -189,7 +193,7 @@ namespace Octopus.Client.Repositories.Async
             try
             {
                 Logger.Info($"Requesting signature for delta compression from the server for upload of a package with id '{packageId}' and version '{version}'");
-                signatureResult = await repository.Client.Get<PackageSignatureResource>(await repository.Link("PackageDeltaSignature").ConfigureAwait(false), new { packageId, version }).ConfigureAwait(false);
+                signatureResult = await repository.Client.Get<PackageSignatureResource>(await repository.Link("PackageDeltaSignature").ConfigureAwait(false), new { packageId, version }, cancellationToken).ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -221,7 +225,8 @@ namespace Octopus.Client.Repositories.Async
                     var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                         link,
                         new FileUpload() { Contents = delta, FileName = Path.GetFileName(fileName) },
-                        pathParameters).ConfigureAwait(false);
+                        pathParameters,
+                        cancellationToken).ConfigureAwait(false);
 
                     Logger.Info("Delta transfer completed");
 

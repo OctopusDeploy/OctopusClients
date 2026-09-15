@@ -28,7 +28,7 @@ namespace Octopus.Client.Tests.Operations
         {
             clientFactory = Substitute.For<IOctopusClientFactory>();
             client = Substitute.For<IOctopusAsyncClient>();
-            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
+            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>(), Arg.Any<CancellationToken>(), Arg.Any<OctopusClientOptions>()).Returns(client);
             operation = new RegisterKubernetesWorkerOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -74,16 +75,27 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="InvalidRegistrationArgumentsException">
         /// </exception>
-        public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public override Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
+            => ExecuteAsync(repository, CancellationToken.None);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy server repository.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="InvalidRegistrationArgumentsException">
+        /// </exception>
+        public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
-            var worker = await GetWorker(repository).ConfigureAwait(false);
-            var proxy = await GetProxy(repository).ConfigureAwait(false);
+            var worker = await GetWorker(repository, cancellationToken).ConfigureAwait(false);
+            var proxy = await GetProxy(repository, cancellationToken).ConfigureAwait(false);
 
             if (!IsExistingWorker(worker) || AllowOverwrite)
             {
-                var machinePolicy = await GetMachinePolicy(repository).ConfigureAwait(false);
+                var machinePolicy = await GetMachinePolicy(repository, cancellationToken).ConfigureAwait(false);
                 ApplyBaseChanges(worker, machinePolicy, proxy);
-                var selectedPools = GetWorkerPools(repository).ConfigureAwait(false);
+                var selectedPools = GetWorkerPools(repository, cancellationToken).ConfigureAwait(false);
                 worker.WorkerPoolIds = new ReferenceCollection((await selectedPools).Select(p => p.Id).ToArray());
             }
             else
@@ -91,7 +103,7 @@ namespace Octopus.Client.Operations
                 PrepareWorkerForReRegistration(worker, proxy?.Id);
             }
 
-            await ModifyOrCreateWorker(repository, worker);
+            await ModifyOrCreateWorker(repository, worker, cancellationToken);
         }
 
         static bool IsExistingWorker(WorkerResource worker)
@@ -118,12 +130,12 @@ namespace Octopus.Client.Operations
             return existing ?? new WorkerResource();
         }
 
-        async Task<WorkerResource> GetWorker(IOctopusSpaceAsyncRepository repository)
+        async Task<WorkerResource> GetWorker(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             var existing = default(WorkerResource);
             try
             {
-                existing = await repository.Workers.FindByName(MachineName).ConfigureAwait(false);
+                existing = await repository.Workers.FindByName(MachineName, cancellationToken).ConfigureAwait(false);
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
@@ -155,12 +167,12 @@ namespace Octopus.Client.Operations
             return workerPools;
         }
 
-        async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusSpaceAsyncRepository repository)
+        async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             List<WorkerPoolResource> workerPools = new();
             if (WorkerPoolNames is not null && WorkerPoolNames.Any())
             {
-                var workerPoolsByName = await repository.WorkerPools.FindByNames(WorkerPoolNames).ConfigureAwait(false);
+                var workerPoolsByName = await repository.WorkerPools.FindByNames(WorkerPoolNames, cancellationToken).ConfigureAwait(false);
                 workerPools.AddRange(workerPoolsByName);
 
                 var missingByNameOnly = WorkerPoolNames.Except(workerPoolsByName.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
@@ -173,7 +185,7 @@ namespace Octopus.Client.Operations
             {
                 var workerPoolsByNameIdOrSlug =
                     await repository.WorkerPools.FindByNameIdOrSlugs<WorkerPoolResource, IAsyncWorkerPoolRepository>(
-                        WorkerPools, missing => CouldNotFindByMultipleMessage("worker pool", missing.ToArray()));
+                        WorkerPools, cancellationToken, missing => CouldNotFindByMultipleMessage("worker pool", missing.ToArray()));
                 workerPools.AddRange(workerPoolsByNameIdOrSlug);
             }
 
@@ -188,12 +200,12 @@ namespace Octopus.Client.Operations
                 repository.Workers.Create(worker);
         }
 
-        static async Task ModifyOrCreateWorker(IOctopusSpaceAsyncRepository repository, WorkerResource worker)
+        static async Task ModifyOrCreateWorker(IOctopusSpaceAsyncRepository repository, WorkerResource worker, CancellationToken cancellationToken)
         {
             if (IsExistingWorker(worker))
-                await repository.Workers.Modify(worker);
+                await repository.Workers.Modify(worker, cancellationToken);
             else
-                await repository.Workers.Create(worker);
+                await repository.Workers.Create(worker, cancellationToken);
         }
     }
 }

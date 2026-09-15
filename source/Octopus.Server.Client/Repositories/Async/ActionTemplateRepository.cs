@@ -38,9 +38,13 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Get<List<ActionTemplateSearchResource>>(await Repository.Link("ActionTemplatesSearch").ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<List<ActionTemplateCategoryResource>> Categories()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<List<ActionTemplateCategoryResource>> Categories()
+            => Categories(CancellationToken.None);
+
+        public async Task<List<ActionTemplateCategoryResource>> Categories(CancellationToken cancellationToken)
         {
-            return await Client.Get<List<ActionTemplateCategoryResource>>(await Repository.Link("ActionTemplatesCategories").ConfigureAwait(false)).ConfigureAwait(false);
+            return await Client.Get<List<ActionTemplateCategoryResource>>(await Repository.Link("ActionTemplatesCategories").ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
