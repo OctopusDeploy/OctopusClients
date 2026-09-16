@@ -192,9 +192,18 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             options ??= new OctopusClientOptions();
             var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool);
-            // User used to see this exception 
-            // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
-            await client.Repository.LoadRootDocument(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                // User used to see this exception 
+                // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
+                await client.Repository.LoadRootDocument(cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                client.Dispose();
+                throw;
+            }
+
             return client;
         }
 
