@@ -42,10 +42,12 @@ namespace Octopus.Client.Editors
                 Instance = repository.Create(new TagSetResource
                 {
                     Name = name,
+                    Description = description,
                 });
             }
             else
             {
+                existing.Name = name;
                 existing.Description = description;
                 Instance = repository.Modify(existing);
             }

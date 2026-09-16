@@ -52,10 +52,12 @@ namespace Octopus.Client.Editors.Async
                 Instance = await repository.Create(new TagSetResource
                 {
                     Name = name,
+                    Description = description,
                 }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
+                existing.Name = name;
                 existing.Description = description;
                 Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
