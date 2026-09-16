@@ -13,6 +13,9 @@ namespace Octopus.Client.Repositories.Async
         Task<List<ActionTemplateSearchResource>> Search();
         Task<List<ActionTemplateSearchResource>> Search(CancellationToken cancellationToken);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
+        Task<List<ActionTemplateCategoryResource>> Categories();
+        Task<List<ActionTemplateCategoryResource>> Categories(CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version);
         Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version, CancellationToken cancellationToken);
         [Obsolete("Please use the overload with cancellation token instead.", false)]

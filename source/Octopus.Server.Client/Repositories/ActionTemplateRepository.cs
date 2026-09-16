@@ -8,6 +8,7 @@ namespace Octopus.Client.Repositories
     public interface IActionTemplateRepository : ICreate<ActionTemplateResource>, IModify<ActionTemplateResource>, IDelete<ActionTemplateResource>, IGet<ActionTemplateResource>, IFindByName<ActionTemplateResource>, IGetAll<ActionTemplateResource>
     {
         List<ActionTemplateSearchResource> Search();
+        List<ActionTemplateCategoryResource> Categories();
         ActionTemplateResource GetVersion(ActionTemplateResource resource, int version);
         ActionUpdateResultResource[] UpdateActions(ActionTemplateResource actionTemplate, ActionsUpdateResource update);
         void SetLogo(ActionTemplateResource resource, string fileName, Stream contents);

@@ -9577,6 +9577,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
   {
+    List<ActionTemplateCategoryResource> Categories()
     Octopus.Client.Model.ActionTemplateResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     List<ActionTemplateSearchResource> Search()
     void SetLogo(Octopus.Client.Model.ActionTemplateResource, String, Stream)
@@ -10442,6 +10443,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
   {
+    Task<List<ActionTemplateCategoryResource>> Categories()
+    Task<List<ActionTemplateCategoryResource>> Categories(CancellationToken)
     Task<ActionTemplateResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     Task<ActionTemplateResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32, CancellationToken)
     Task<List<ActionTemplateSearchResource>> Search()
