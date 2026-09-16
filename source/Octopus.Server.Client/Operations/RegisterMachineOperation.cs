@@ -136,6 +136,8 @@ namespace Octopus.Client.Operations
         List<string> GetEnvironmentIds(IOctopusSpaceRepository repository)
         {
             List<string> environmentIds = new();
+            // This block exists to keep honouring the deprecated EnvironmentNames property, so reading it here is deliberate.
+#pragma warning disable CS0618
             if (EnvironmentNames is not null && EnvironmentNames.Any())
             {
                 var envsByName = repository.Environments.FindByNames(EnvironmentNames);
@@ -149,6 +151,7 @@ namespace Octopus.Client.Operations
                 if (missingByNameOnly.Any())
                     throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
             }
+#pragma warning restore CS0618
 
             if (Environments is not null && Environments.Any())
             {
@@ -273,6 +276,8 @@ namespace Octopus.Client.Operations
         async Task<List<string>> GetEnvironmentIds(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             List<string> environmentIds = new();
+            // This block exists to keep honouring the deprecated EnvironmentNames property, so reading it here is deliberate.
+#pragma warning disable CS0618
             if (EnvironmentNames is not null && EnvironmentNames.Any())
             {
                 var envsByName = await repository.Environments.FindByNames(EnvironmentNames, cancellationToken).ConfigureAwait(false);
@@ -286,6 +291,7 @@ namespace Octopus.Client.Operations
                 if (missingByNameOnly.Any())
                     throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
             }
+#pragma warning restore CS0618
 
             if (Environments is not null && Environments.Any())
             {

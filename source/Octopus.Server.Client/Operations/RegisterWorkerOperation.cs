@@ -146,6 +146,8 @@ namespace Octopus.Client.Operations
         List<WorkerPoolResource> GetWorkerPools(IOctopusSpaceRepository repository)
         {
             List<WorkerPoolResource> workerPools = new();
+            // This block exists to keep honouring the deprecated WorkerPoolNames property, so reading it here is deliberate.
+#pragma warning disable CS0618
             if (WorkerPoolNames is not null && WorkerPoolNames.Any())
             {
                 var workerPoolsByName = repository.WorkerPools.FindByNames(WorkerPoolNames);
@@ -156,6 +158,7 @@ namespace Octopus.Client.Operations
                 if (missingByNameOnly.Any())
                     throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missingByNameOnly.ToArray()));
             }
+#pragma warning restore CS0618
 
             if (WorkerPools is not null && WorkerPools.Any())
             {
@@ -170,6 +173,8 @@ namespace Octopus.Client.Operations
         async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
         {
             List<WorkerPoolResource> workerPools = new();
+            // This block exists to keep honouring the deprecated WorkerPoolNames property, so reading it here is deliberate.
+#pragma warning disable CS0618
             if (WorkerPoolNames is not null && WorkerPoolNames.Any())
             {
                 var workerPoolsByName = await repository.WorkerPools.FindByNames(WorkerPoolNames, cancellationToken).ConfigureAwait(false);
@@ -180,6 +185,7 @@ namespace Octopus.Client.Operations
                 if (missingByNameOnly.Any())
                     throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missingByNameOnly.ToArray()));
             }
+#pragma warning restore CS0618
 
             if (WorkerPools is not null && WorkerPools.Any())
             {
