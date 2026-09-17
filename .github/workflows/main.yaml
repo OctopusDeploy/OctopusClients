@@ -203,7 +203,7 @@ jobs:
           path: ./artifacts/
 
       - name: Login to Octopus Deploy 🐙
-        uses: OctopusDeploy/login@e39e03d07630f363bdccd6c7ad4eb28e0ea8a184 # v2
+        uses: OctopusDeploy/login@d156cc2dd8d6f4592c3a0e54e8b51a4ea9198dd5 # v2
         with: 
           server: ${{ secrets.OCTOPUS_URL }}
           service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
