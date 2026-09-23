@@ -216,7 +216,7 @@ jobs:
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
 
       - name: Create Release in Octopus 🐙
-        uses: OctopusDeploy/create-release-action@7e9e7d1c07fc6b2bd6a805f221a51939464e74d6 # v4
+        uses: OctopusDeploy/create-release-action@4eaeba13bef87ec399ecac936e9f513758784694 # v4
         with:
           project: "Octopus.Client"
           packages: |
