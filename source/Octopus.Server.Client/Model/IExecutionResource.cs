@@ -25,6 +25,7 @@ namespace Octopus.Client.Model
         string ManifestVariableSetId { get; set; }
         string DeployedBy { get; set; }
         string DeployedById { get; set; }
+        string DeployedByActorType { get; set; }
         bool FailureEncountered { get; }
         ReferenceCollection DeployedToMachineIds { get; set; }
         Dictionary<string, string> FormValues { get; set; }

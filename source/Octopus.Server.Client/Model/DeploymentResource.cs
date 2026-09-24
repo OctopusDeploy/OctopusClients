@@ -132,6 +132,11 @@ namespace Octopus.Client.Model
 
         public string DeployedById { get; set; }
 
+        /// <summary>
+        /// The kind of actor that started the deployment, e.g. "User", "System", "Agent" or "ServiceAccount".
+        /// </summary>
+        public string DeployedByActorType { get; set; }
+
         public bool FailureEncountered { get; set; }
 
         public ReferenceCollection DeployedToMachineIds { get; set; }
