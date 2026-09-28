@@ -6265,8 +6265,12 @@ Octopus.Client.Model
   class TeamsChannelSubscriptionTarget
   {
     .ctor()
+    String ChannelId { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String TeamId { get; set; }
+    String TeamName { get; set; }
+    String Type { get; set; }
     Octopus.Client.Model.PropertyValueResource WebhookUrl { get; set; }
   }
   class TelemetryConfigurationResource

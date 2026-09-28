@@ -75,9 +75,18 @@ namespace Octopus.Client.Model
         // Client-generated and stable: it identifies which stored WebhookUrl an unchanged HasValue refers to.
         public string Id { get; set; }
 
+        // 'AppChannel' or 'Webhook'. Must round-trip, or saving an AppChannel target turns it into a Webhook.
+        public string Type { get; set; } = "Webhook";
+
         public string Name { get; set; }
 
         public PropertyValueResource WebhookUrl { get; set; }
+
+        public string ChannelId { get; set; }
+
+        public string TeamId { get; set; }
+
+        public string TeamName { get; set; }
     }
 
     public class EventNotificationSubscriptionFilter
