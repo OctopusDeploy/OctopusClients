@@ -33,9 +33,6 @@ namespace Octopus.Client.Model
         public bool IsNavigationVisualUpliftEnabled { get; set; }
 
         [Writeable]
-        public bool IsProjectsPageOptimizationEnabled { get; set; }
-
-        [Writeable]
         public bool IsProjectsPageOnboardingEnabled { get; set; }
 
         [Writeable]
