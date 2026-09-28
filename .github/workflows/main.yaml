@@ -36,7 +36,6 @@ jobs:
       AzureKeyVaultTenantId: ${{ secrets.AZURE_KEYVAULT_TENANTID }}
     outputs:
       octoversion_fullsemver: ${{ steps.build.outputs.octoversion_fullsemver }}
-      skip-release-and-release-note: ${{ steps.github-tag.outputs.skip-release-and-release-note }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -48,7 +47,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: | 
+          dotnet-version: |
             8.0.x
             10.0.x
 
@@ -125,29 +124,6 @@ jobs:
           name: OctoClientsNuget
           path: ./artifacts/*.nupkg
 
-      - name: Tag release (when not pre-release) 🏷️
-        id: github-tag
-        if: ${{ !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const commitMessage = context.payload.head_commit?.message?.trim() || '';
-            const skipReleaseAndReleaseNote = /^skip-release-and-release-note:\s*true\s*$/mi.test(commitMessage);
-            core.setOutput('skip-release-and-release-note', skipReleaseAndReleaseNote);
-            if (skipReleaseAndReleaseNote) {
-              // Abort early: the commit is marked as not significant enough to trigger a release or be included in
-              // release notes, so we don't need a tag either
-              return;
-            }
-
-            await github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
-              sha: context.sha,
-            });
-
   test-linux:
     needs: build
     runs-on: ubuntu-latest
@@ -157,7 +133,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: | 
+          dotnet-version: |
             8.0.x
             10.0.x
 
@@ -177,38 +153,77 @@ jobs:
   deploy_nuget:
     name: Upload nuget packages to Octopus Deploy and create release if required
     runs-on: ubuntu-latest
-    if: >- # Only run if we want a release or if it's a nightly build (nightly pushes to Octopus to exercise the pipeline, but no actual release gets created)
-      ${{
-        needs.build.outputs.skip-release-and-release-note == 'false' ||
-        github.event_name == 'schedule'
-      }}
     permissions:
       id-token: write # Required to obtain the ID token from GitHub Actions
       actions: read # Required to download artifact
-      contents: write # Required to create releases
+      contents: write # Required to create tags and releases
     env:
       OCTOPUS_SPACE: "Core Platform"
       SHOULD_CREATE_RELEASE: ${{ github.ref == 'refs/heads/master' && !contains(needs.build.outputs.octoversion_fullsemver, '-') }}
     needs: [ build, test-linux ]
+    # Ensure runs that should create a release don't collide (this condition must match SHOULD_CREATE_RELEASE)
+    concurrency:
+      group: ${{ github.ref == 'refs/heads/master' && !contains(needs.build.outputs.octoversion_fullsemver, '-') && 'octopus-client-release' || format('octopus-client-deploy-{0}', github.run_id) }}
+      cancel-in-progress: false
     steps:
-      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+
+      - name: Check for unreleased changes
+        id: release-check
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const skipMarker = /^\s*skip-release-and-release-note:\s*true\s*$/mi;
+
+            // Look at everything since the last release, not just this commit, to see if we should be creating a new
+            // release. This allows us to recover from a missed release due to an earlier failed build
+            async function hasUnreleasedChanges() {
+              let lastReleaseTag;
+              try {
+                lastReleaseTag = (await github.rest.repos.getLatestRelease({ owner, repo })).data.tag_name;
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                return true; // Nothing has been released yet
+              }
+
+              const perPage = 100;
+              for (let page = 1; ; ++page) {
+                const { data } = await github.rest.repos.compareCommitsWithBasehead({
+                  owner, repo, basehead: `${lastReleaseTag}...${context.sha}`, per_page: perPage, page,
+                });
+                if (data.commits.some(commit => !skipMarker.test(commit.commit.message))) return true;
+                if (data.commits.length < perPage) return false;
+              }
+            }
+
+            // Nightly builds always push to Octopus to exercise the pipeline
+            const skip = context.eventName !== 'schedule' && !(await hasUnreleasedChanges());
+            if (skip) core.notice('No commits needing a release since the last release, skipping deployment and release');
+            core.setOutput('skip', skip);
+
+      # We only proceed past here if we want a release or if it's a nightly build (nightly pushes to Octopus to exercise the pipeline, but no actual release gets created)
+
+      - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
         uses: actions/checkout@v7
         with:
           fetch-depth: 0 # fetching everything is unfortunately required to get tags
 
       - name: Download nuget package artifact
+        if: ${{ steps.release-check.outputs.skip == 'false' }}
         uses: actions/download-artifact@v8
         with:
           name: OctoClientsNuget
           path: ./artifacts/
 
       - name: Login to Octopus Deploy 🐙
+        if: ${{ steps.release-check.outputs.skip == 'false' }}
         uses: OctopusDeploy/login@d156cc2dd8d6f4592c3a0e54e8b51a4ea9198dd5 # v2
-        with: 
+        with:
           server: ${{ secrets.OCTOPUS_URL }}
           service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
 
       - name: Push to Octopus 🐙
+        if: ${{ steps.release-check.outputs.skip == 'false' }}
         uses: OctopusDeploy/push-package-action@e2b339863f2aba04d1aead9675136af1bd2bceaa # v4
         with:
           packages: |
@@ -216,6 +231,7 @@ jobs:
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
 
       - name: Create Release in Octopus 🐙
+        if: ${{ steps.release-check.outputs.skip == 'false' }}
         uses: OctopusDeploy/create-release-action@4eaeba13bef87ec399ecac936e9f513758784694 # v4
         with:
           project: "Octopus.Client"
@@ -224,17 +240,29 @@ jobs:
 
       # We use jc to convert git log output into something machine readable, as git can't natively do so.
       # jq is preinstalled in GitHub actions, but jc (https://github.com/kellyjonbrazil/jc) is not.
-      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+      - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Set up python
         uses: actions/setup-python@v7
         with:
           python-version: '3.14'
 
-      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+      - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Install jc
         run: pip3 install jc==1.25.5
 
-      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+      - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
+        name: Tag release 🏷️
+        uses: actions/github-script@v9
+        with:
+          script: |
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ needs.build.outputs.octoversion_fullsemver }}",
+              sha: context.sha,
+            });
+
+      - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Create GitHub Release 🚀
         uses: actions/github-script@v9
         with:
@@ -297,7 +325,7 @@ jobs:
             });
             console.log(`Release ${tagName} created successfully`);
 
-      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+      - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Attach NuGet packages to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
