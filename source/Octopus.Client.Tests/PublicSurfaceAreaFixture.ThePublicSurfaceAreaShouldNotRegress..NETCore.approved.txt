@@ -3870,6 +3870,8 @@ Octopus.Client.Model
     List<InterruptionPullRequestResource> PullRequests { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ResponsibleTeamIds { get; set; }
+    String ResponsibleUserActor { get; set; }
+    String ResponsibleUserActorType { get; set; }
     String ResponsibleUserId { get; set; }
     String SpaceId { get; set; }
     String TaskId { get; set; }

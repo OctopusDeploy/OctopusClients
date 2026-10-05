@@ -72,6 +72,20 @@ namespace Octopus.Client.Model
         public string ResponsibleUserId { get; set; }
 
         /// <summary>
+        /// The kind of actor that took responsibility for this interruption, e.g. "User", "System", "Agent" or "ServiceAccount".
+        /// "Unknown" when nobody has taken responsibility, or for interruptions claimed before this was recorded.
+        /// </summary>
+        [JsonProperty(Order = 31)]
+        public string ResponsibleUserActorType { get; set; }
+
+        /// <summary>
+        /// The agent client (such as an MCP client) the responsible user acted through, typically in the same form as OAuth client.
+        /// Null for other kinds of credential.
+        /// </summary>
+        [JsonProperty(Order = 32)]
+        public string ResponsibleUserActor { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the current user has permissions to take responsibility for this
         /// interruption.
         /// </summary>
