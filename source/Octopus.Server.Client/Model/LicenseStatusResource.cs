@@ -53,6 +53,9 @@ namespace Octopus.Client.Model
         /// One of the values from <see cref="PermissionModes"/>
         /// </summary>
         public string PermissionsMode { get; set; }
+
+        public bool CanExceedWithUsageReporting { get; set; }
+        public int? UsageReportingDaysRemaining { get; set; }
     }
 
     public class LicenseMessageResource

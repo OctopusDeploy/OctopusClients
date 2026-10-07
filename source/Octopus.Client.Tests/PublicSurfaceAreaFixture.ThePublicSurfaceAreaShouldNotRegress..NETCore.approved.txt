@@ -4085,6 +4085,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean CanExceedWithUsageReporting { get; set; }
     String ComplianceSummary { get; set; }
     Int32 DaysToEffectiveExpiryDate { get; set; }
     Boolean DoesExpiryBlockKeyActivities { get; set; }
@@ -4099,6 +4100,7 @@ Octopus.Client.Model
     Octopus.Client.Model.LicenseLimitStatusResource[] Limits { get; set; }
     Octopus.Client.Model.LicenseMessageResource[] Messages { get; set; }
     String PermissionsMode { get; set; }
+    Nullable<Int32> UsageReportingDaysRemaining { get; set; }
   }
   class LicenseUsageResource
     Octopus.Client.Extensibility.IResource
