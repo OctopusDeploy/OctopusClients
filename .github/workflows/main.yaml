@@ -224,7 +224,7 @@ jobs:
 
       - name: Push to Octopus 🐙
         if: ${{ steps.release-check.outputs.skip == 'false' }}
-        uses: OctopusDeploy/push-package-action@e2b339863f2aba04d1aead9675136af1bd2bceaa # v4
+        uses: OctopusDeploy/push-package-action@88c472a064af6485c4d0cc07d587213895a74a2e # v4
         with:
           packages: |
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
