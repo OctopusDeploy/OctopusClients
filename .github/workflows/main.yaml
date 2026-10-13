@@ -244,7 +244,7 @@ jobs:
         name: Set up python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.14'
+          python-version: '3.15'
 
       - if: ${{ steps.release-check.outputs.skip == 'false' && env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Install jc
