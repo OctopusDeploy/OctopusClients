@@ -55,8 +55,8 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Octopus.Octodiff" Version="2.0.550" />
-    <PackageReference Include="Octopus.TinyTypes" Version="3.1.0" />
-    <PackageReference Include="Octopus.TinyTypes.Json" Version="3.1.0" />
-    <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="3.1.0" />
+    <PackageReference Include="Octopus.TinyTypes" Version="3.1.1" />
+    <PackageReference Include="Octopus.TinyTypes.Json" Version="3.1.1" />
+    <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="3.1.1" />
   </ItemGroup>
 </Project>
