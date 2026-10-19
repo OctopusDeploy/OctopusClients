@@ -9,12 +9,6 @@ namespace Octopus.Client.Repositories.Async
     public interface ISchedulerRepository
     {
         [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task Start();
-        Task Start(CancellationToken cancellationToken);
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task Start(string taskName);
-        Task Start(string taskName, CancellationToken cancellationToken);
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Stop();
         Task Stop(CancellationToken cancellationToken);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -41,24 +35,6 @@ namespace Octopus.Client.Repositories.Async
         public SchedulerRepository(IOctopusAsyncRepository repository)
         {
             this.repository = repository;
-        }
-
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        public Task Start()
-            => Start(CancellationToken.None);
-
-        public Task Start(CancellationToken cancellationToken)
-        {
-            return repository.Client.GetContent("~/api/scheduler/start", cancellationToken);
-        }
-
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        public Task Start(string taskName)
-            => Start(taskName, CancellationToken.None);
-
-        public Task Start(string taskName, CancellationToken cancellationToken)
-        {
-            return repository.Client.GetContent($"~/api/scheduler/start?task={taskName}", cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

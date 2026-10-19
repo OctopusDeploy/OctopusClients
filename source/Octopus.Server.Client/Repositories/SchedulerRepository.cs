@@ -5,8 +5,6 @@ namespace Octopus.Client.Repositories
 {
     public interface ISchedulerRepository
     {
-        void Start();
-        void Start(string taskName);
         void Stop();
         void Stop(string taskName);
         void Trigger(string taskName);
@@ -22,16 +20,6 @@ namespace Octopus.Client.Repositories
         public SchedulerRepository(IOctopusRepository repository)
         {
             this.repository = repository;
-        }
-
-        public void Start()
-        {
-            repository.Client.GetContent("~/api/scheduler/start");
-        }
-
-        public void Start(string taskName)
-        {
-            repository.Client.GetContent($"~/api/scheduler/start?task={taskName}");
         }
 
         public void Trigger(string taskName)
