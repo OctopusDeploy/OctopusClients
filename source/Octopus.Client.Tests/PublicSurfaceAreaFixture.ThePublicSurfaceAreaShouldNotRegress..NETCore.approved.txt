@@ -10126,9 +10126,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ScheduledTaskDetailsResource GetLogs(String)
     Stream GetRawLogs(String)
     Octopus.Client.Model.SchedulerStatusResource Status()
-    void Stop()
-    void Stop(String)
-    void Trigger(String)
   }
   interface IScopedUserRoleRepository
     Octopus.Client.Repositories.ICreate<ScopedUserRoleResource>
@@ -11200,12 +11197,6 @@ Octopus.Client.Repositories.Async
     Task<Stream> GetRawLogs(String, CancellationToken)
     Task<SchedulerStatusResource> Status()
     Task<SchedulerStatusResource> Status(CancellationToken)
-    Task Stop()
-    Task Stop(CancellationToken)
-    Task Stop(String)
-    Task Stop(String, CancellationToken)
-    Task Trigger(String)
-    Task Trigger(String, CancellationToken)
   }
   interface IScopedUserRoleRepository
     Octopus.Client.Repositories.Async.ICreate<ScopedUserRoleResource>

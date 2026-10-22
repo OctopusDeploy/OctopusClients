@@ -5,9 +5,6 @@ namespace Octopus.Client.Repositories
 {
     public interface ISchedulerRepository
     {
-        void Stop();
-        void Stop(string taskName);
-        void Trigger(string taskName);
         ScheduledTaskDetailsResource GetLogs(string taskName);
         Stream GetRawLogs(string taskName);
         SchedulerStatusResource Status();
@@ -20,21 +17,6 @@ namespace Octopus.Client.Repositories
         public SchedulerRepository(IOctopusRepository repository)
         {
             this.repository = repository;
-        }
-
-        public void Trigger(string taskName)
-        {
-            repository.Client.GetContent($"~/api/scheduler/trigger?task={taskName}");
-        }
-
-        public void Stop()
-        {
-            repository.Client.GetContent("~/api/scheduler/stop");
-        }
-
-        public void Stop(string taskName)
-        {
-            repository.Client.GetContent($"~/api/scheduler/stop?task={taskName}");
         }
 
         public ScheduledTaskDetailsResource GetLogs(string taskName)

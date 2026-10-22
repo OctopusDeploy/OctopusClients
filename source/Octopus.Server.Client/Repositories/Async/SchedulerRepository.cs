@@ -9,15 +9,6 @@ namespace Octopus.Client.Repositories.Async
     public interface ISchedulerRepository
     {
         [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task Stop();
-        Task Stop(CancellationToken cancellationToken);
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task Stop(string taskName);
-        Task Stop(string taskName, CancellationToken cancellationToken);
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task Trigger(string taskName);
-        Task Trigger(string taskName, CancellationToken cancellationToken);
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ScheduledTaskDetailsResource> GetLogs(string taskName);
         Task<ScheduledTaskDetailsResource> GetLogs(string taskName, CancellationToken cancellationToken);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
@@ -35,33 +26,6 @@ namespace Octopus.Client.Repositories.Async
         public SchedulerRepository(IOctopusAsyncRepository repository)
         {
             this.repository = repository;
-        }
-
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        public Task Trigger(string taskName)
-            => Trigger(taskName, CancellationToken.None);
-
-        public Task Trigger(string taskName, CancellationToken cancellationToken)
-        {
-            return repository.Client.GetContent($"~/api/scheduler/trigger?task={taskName}", cancellationToken);
-        }
-
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        public Task Stop()
-            => Stop(CancellationToken.None);
-
-        public Task Stop(CancellationToken cancellationToken)
-        {
-            return repository.Client.GetContent("~/api/scheduler/stop", cancellationToken);
-        }
-
-        [Obsolete("Please use the overload with cancellation token instead.", false)]
-        public Task Stop(string taskName)
-            => Stop(taskName, CancellationToken.None);
-
-        public Task Stop(string taskName, CancellationToken cancellationToken)
-        {
-            return repository.Client.GetContent($"~/api/scheduler/stop?task={taskName}", cancellationToken);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
