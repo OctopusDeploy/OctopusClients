@@ -119,6 +119,12 @@ namespace Octopus.Client.Model
         [JsonProperty(Order = 50)]
         public bool IsLinkedToOtherInterruption { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether AI agents are prevented from responding to this interruption.
+        /// </summary>
+        [JsonProperty(Order = 55)]
+        public bool AgentResponsesPrevented { get; set; }
+
         public string SpaceId { get; set; }
 
         /// <summary>
