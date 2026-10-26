@@ -5461,6 +5461,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String AgentAccess { get; set; }
     Boolean CancelQueuedTasks { get; set; }
     Boolean CancelRunningTasks { get; set; }
     Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }

@@ -43,6 +43,12 @@ namespace Octopus.Client.Model
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ReferenceCollection Environments { get; } = new ReferenceCollection();
 
+        /// <summary>
+        /// Leave unset to keep the runbook's current setting when modifying it.
+        /// </summary>
+        [Writeable]
+        public string AgentAccess { get; set; }
+
         [Writeable]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
