@@ -44,9 +44,9 @@ namespace Octopus.Client.Tests.Spaces
             await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t =>
             {
                 t.SpaceId.Should().Be(spaceId);
-            })).ConfigureAwait(false);
+            }), Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(CreateSpaceResource(spaceId))));
-            var created = await teamRepo.Create(new TeamResource() { Name = "Test" }).ConfigureAwait(false);
+            var created = await teamRepo.Create(new TeamResource() { Name = "Test" }, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Test]
@@ -58,9 +58,9 @@ namespace Octopus.Client.Tests.Spaces
             await client.Create(Arg.Any<string>(), Arg.Do<ProjectGroupResource>(t =>
             {
                 t.SpaceId.Should().Be(spaceId);
-            }));
+            }), Arg.Any<object>(), Arg.Any<CancellationToken>());
             var repo = new ProjectGroupRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(CreateSpaceResource(spaceId))));
-            var _ = await repo.Create(new ProjectGroupResource { Name = "Test" }).ConfigureAwait(false);
+            var _ = await repo.Create(new ProjectGroupResource { Name = "Test" }, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Test]
@@ -73,11 +73,11 @@ namespace Octopus.Client.Tests.Spaces
             await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t =>
             {
                 t.SpaceId.Should().BeNullOrEmpty();
-            })).ConfigureAwait(false);
+            }), Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
             var includingSpaceContext = includeSystem ? SpaceContext.SpecificSpaceAndSystem(CreateSpaceResource(includingSpaceId)) : SpaceContext.SpecificSpace(CreateSpaceResource(includingSpaceId));
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.Unspecified()));
             var multiScoped = teamRepo.UsingContext(includingSpaceContext);
-            var _ = await multiScoped.Create(new TeamResource() { Name = "Test" }).ConfigureAwait(false);
+            var _ = await multiScoped.Create(new TeamResource() { Name = "Test" }, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Test]
@@ -88,10 +88,10 @@ namespace Octopus.Client.Tests.Spaces
         {
             var spaceIds = spaceIdsToUse.Split(',');
             var client = SetupAsyncClient();
-            await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t => t.SpaceId.Should().Be("Spaces-4"))).ConfigureAwait(false);
+            await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t => t.SpaceId.Should().Be("Spaces-4")), Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.Unspecified()));
             var multiScoped = teamRepo.UsingContext(SpaceContext.SpecificSpacesAndSystem(spaceIds.Select(CreateSpaceResource)));
-            var _ = await multiScoped.Create(new TeamResource() { Name = "Test", SpaceId = "Spaces-4" }).ConfigureAwait(false);
+            var _ = await multiScoped.Create(new TeamResource() { Name = "Test", SpaceId = "Spaces-4" }, CancellationToken.None).ConfigureAwait(false);
         }
 
         SpaceResource CreateSpaceResource(string id)

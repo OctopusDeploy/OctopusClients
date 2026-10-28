@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -29,49 +30,49 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task Status400()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/400");
+            Func<Task> get = () => AsyncClient.Get<object>("~/400", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusValidationException>();
         }
 
         [Test]
         public async Task Status401()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/401");
+            Func<Task> get = () => AsyncClient.Get<object>("~/401", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusSecurityException>();
         }
 
         [Test]
         public async Task Status403()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/403");
+            Func<Task> get = () => AsyncClient.Get<object>("~/403", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusSecurityException>();
         }
 
         [Test]
         public async Task Status404()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/404");
+            Func<Task> get = () => AsyncClient.Get<object>("~/404", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusResourceNotFoundException>();
         }
 
         [Test]
         public async Task Status405()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/405");
+            Func<Task> get = () => AsyncClient.Get<object>("~/405", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusMethodNotAllowedFoundException>();
         }
 
         [Test]
         public async Task Status409()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/409");
+            Func<Task> get = () => AsyncClient.Get<object>("~/409", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusValidationException>();
         }
 
         [Test]
         public async Task Status500()
         {
-            Func<Task> get = () => AsyncClient.Get<object>("~/500");
+            Func<Task> get = () => AsyncClient.Get<object>("~/500", CancellationToken.None);
             await get.Should().ThrowAsync<OctopusServerException>();
         }
     }

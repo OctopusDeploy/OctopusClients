@@ -30,7 +30,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task ConfiguredTimeoutWorks()
         {
             var sw = Stopwatch.StartNew();
-            Func<Task> get = () => AsyncClient.Get<string>("~/");
+            Func<Task> get = () => AsyncClient.Get<string>("~/", CancellationToken.None);
 
             // We want a TimeoutException here, and we get one on .net 6.
             // The async/exception wrapping behaviour on .NET framework is such that we get the TaskCanceledException instead.

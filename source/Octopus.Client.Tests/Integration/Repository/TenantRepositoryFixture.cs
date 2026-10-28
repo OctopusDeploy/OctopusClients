@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Nancy;
 using NUnit.Framework;
@@ -28,10 +29,10 @@ namespace Octopus.Client.Tests.Integration.Repository
         {
             var repository = new TenantRepository(new OctopusAsyncRepository(AsyncClient));
             Assert.ThrowsAsync<OperationNotSupportedByOctopusServerException>(
-                (Func<Task>)(async () => await repository.CreateOrModify("My Tenant", "Tenant Description")),
+                (Func<Task>)(async () => await repository.CreateOrModify("My Tenant", "Tenant Description", CancellationToken.None)),
             "Tenant Descriptions requires Octopus version 2019.8.0 or newer.");
             Assert.ThrowsAsync<OperationNotSupportedByOctopusServerException>(
-                (Func<Task>)(async () => await repository.CreateOrModify("My Tenant", "Tenant Description", "Tenant-123")),
+                (Func<Task>)(async () => await repository.CreateOrModify("My Tenant", "Tenant Description", "Tenant-123", CancellationToken.None)),
             "Cloning Tenants requires Octopus version 2019.8.0 or newer.");
         }
 

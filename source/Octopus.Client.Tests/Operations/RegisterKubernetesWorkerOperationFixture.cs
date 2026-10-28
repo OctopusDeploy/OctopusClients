@@ -75,7 +75,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.WorkerPools = new[] { "PoolA", "PoolB" };
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             workerResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
         }
@@ -97,7 +97,7 @@ namespace Octopus.Client.Tests.Operations
             operation.WorkerPools = new[] { "workerpool-2" };
             operation.SubscriptionId = new Uri("poll://ckyhfyfkcbmzjl8sfgch/");
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             workerResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
         }
@@ -162,7 +162,7 @@ namespace Octopus.Client.Tests.Operations
             operation.ProxyName = "MyNewProxy";
             operation.AllowOverwrite = allowOverwrite;
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             return updatedWorkers;
         }

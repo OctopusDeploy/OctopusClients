@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -28,7 +29,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public async Task IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
             var repo = new OctopusAsyncRepository(AsyncClient);
-            Func<Task> getUser = () => repo.Users.Get("users-1");
+            Func<Task> getUser = () => repo.Users.Get("users-1", CancellationToken.None);
             await getUser.Should().ThrowAsync<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
     }

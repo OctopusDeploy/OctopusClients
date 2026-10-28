@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -67,7 +68,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task AsyncClient_ShouldProvideBuildServer_WithCorrectValue()
         {
-            var response = await AsyncClient.Get<TestDto>(TestRootPath);
+            var response = await AsyncClient.Get<TestDto>(TestRootPath, CancellationToken.None);
             response.AutomationContext.Should().Be(ExpectedAutomationEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedAutomationEnvironment} when {EnvironmentVariableName} is set");
         }
 

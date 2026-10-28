@@ -93,9 +93,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 audience: "service-account-uuid",
                 oidcTokenProvider: _ => Task.FromResult(oidcJwt));
 
-            using var client = await OctopusAsyncClient.Create(endpoint).ConfigureAwait(false);
+            using var client = await OctopusAsyncClient.Create(endpoint, CancellationToken.None).ConfigureAwait(false);
 
-            var result = await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth").ConfigureAwait(false);
+            var result = await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth", CancellationToken.None).ConfigureAwait(false);
 
             result.Authorization.Should().StartWith("Bearer octopus-access-token-");
             exchangeCallCount.Should().Be(1);
@@ -110,11 +110,11 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 audience: "service-account-uuid",
                 oidcTokenProvider: _ => Task.FromResult("jwt"));
 
-            using var client = await OctopusAsyncClient.Create(endpoint).ConfigureAwait(false);
+            using var client = await OctopusAsyncClient.Create(endpoint, CancellationToken.None).ConfigureAwait(false);
 
-            await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth").ConfigureAwait(false);
-            await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth").ConfigureAwait(false);
-            await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth").ConfigureAwait(false);
+            await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth", CancellationToken.None).ConfigureAwait(false);
+            await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth", CancellationToken.None).ConfigureAwait(false);
+            await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth", CancellationToken.None).ConfigureAwait(false);
 
             // One exchange during Create (LoadRootDocument), none for the three subsequent calls
             exchangeCallCount.Should().Be(1, "token should be cached after first exchange");
@@ -132,9 +132,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 audience: "service-account-uuid",
                 oidcTokenProvider: _ => Task.FromResult("jwt"));
 
-            using var client = await OctopusAsyncClient.Create(endpoint).ConfigureAwait(false);
+            using var client = await OctopusAsyncClient.Create(endpoint, CancellationToken.None).ConfigureAwait(false);
 
-            var first = await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth").ConfigureAwait(false);
+            var first = await client.Get<AuthEchoDto>($"{TestRootPath}/echo-auth", CancellationToken.None).ConfigureAwait(false);
 
             exchangeCallCount.Should().BeGreaterThanOrEqualTo(2, "each call after expiry should trigger a new exchange");
             first.Authorization.Should().StartWith("Bearer octopus-access-token-");
@@ -150,7 +150,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 audience: "service-account-uuid",
                 oidcTokenProvider: _ => Task.FromResult("jwt"));
 
-            Func<Task> act = () => OctopusAsyncClient.Create(endpoint);
+            Func<Task> act = () => OctopusAsyncClient.Create(endpoint, CancellationToken.None);
             await act.Should().ThrowAsync<OctopusSecurityException>()
                 .WithMessage("*OIDC token exchange failed*").ConfigureAwait(false);
         }

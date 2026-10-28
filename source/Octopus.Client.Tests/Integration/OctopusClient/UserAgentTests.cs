@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -66,7 +67,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             // If you run the tests locally, it is easy to end up with a version of Octopus.Client.dll (system under test) which was built
             // from an earlier commit, whereas the Test assembly is likely to be built with whatever HEAD is at the time.
             // If this happens, simply rebuild the projects in the `Clients` solution folder and the problem should go away
-            var response = await AsyncClient.Get<TestDto>(TestRootPath);
+            var response = await AsyncClient.Get<TestDto>(TestRootPath, CancellationToken.None);
             response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} (TestOS; x64) NoneOrUnknown", "We should set the standard User-Agent header");
         }
 

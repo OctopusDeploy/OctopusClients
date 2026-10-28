@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -23,7 +24,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task ShouldHandleValidationError()
         {
-            Func<Task> post = async () => { await AsyncClient.Post("~/").ConfigureAwait(false); };
+            Func<Task> post = async () => { await AsyncClient.Post("~/", CancellationToken.None).ConfigureAwait(false); };
             (await post.Should().ThrowAsync<OctopusValidationException>())
                 .And
                 .DetailsAs<string[]>().Single().Should().Be("Details");

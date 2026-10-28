@@ -62,7 +62,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateSpaceResourceForSpace(otherSpace.Id);
-            Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource).Wait();
+            Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource, CancellationToken.None).Wait();
 
             activityUnderTest
                 .Should().Throw<ResourceSpaceDoesNotMatchRepositorySpaceException>()
@@ -74,7 +74,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateSpaceResourceForSpace(someSpace.Id);
-            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource, CancellationToken.None).Wait()));
             resource.SpaceId.Should()
                 .Be(someSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
         }
@@ -83,7 +83,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void SpaceRepo_ResourceWithNoSpaceId_Ok()
         {
             var resource = CreateSpaceResourceForSpace(null);
-            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource, CancellationToken.None).Wait()));
             resource.SpaceId
                 .Should().Be(someSpace.Id, $"the repository scope will be used to enrich the spaceResource's {nameof(IHaveSpaceResource.SpaceId)} property");
         }
@@ -94,7 +94,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateMixedResourceForSpace(someSpace.Id);
 
-            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource, CancellationToken.None).Wait()));
             resource.SpaceId.Should()
                 .Be(someSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
         }
@@ -104,7 +104,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateMixedResourceForSpace(otherSpace.Id);
-            Action activityUnderTest = () => repoForMixedScopedResource.Modify(resource).Wait();
+            Action activityUnderTest = () => repoForMixedScopedResource.Modify(resource, CancellationToken.None).Wait();
             activityUnderTest
                 .Should().Throw<ResourceSpaceDoesNotMatchRepositorySpaceException>()
                 .WithMessage("The resource has a different space specified than the one specified by the repository. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
@@ -115,7 +115,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateMixedResourceForSpace(null);
-            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource, CancellationToken.None).Wait()));
             resource.SpaceId.Should().Be(someSpace.Id,
                 $"the repository scope will be used to enrich the spaceResource's {nameof(IHaveSpaceResource.SpaceId)} property");
         }
@@ -139,7 +139,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeForSystem();
             var resource = CreateMixedResourceForSpace(null);
-            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeForSystem();
             var resource = CreateSystemResource();
-            Assert.DoesNotThrow((Action)(() => repoForSystemScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSystemScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeAsUnspecified();
             var resource = CreateSpaceResourceForSpace(someSpace.Id);
-            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeAsUnspecified();
             var resource = CreateSpaceResourceForSpace(null);
-            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
             var resource = CreateSpaceResourceForSpace(null);
-            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSpaceScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeAsUnspecified();
             var resource = CreateMixedResourceForSpace(someSpace.Id);
-            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -187,7 +187,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeAsUnspecified();
             var resource = CreateMixedResourceForSpace(null);
-            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForMixedScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         [Test]
@@ -195,7 +195,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             mockRepo.SetupScopeAsUnspecified();
             var resource = CreateSystemResource();
-            Assert.DoesNotThrow((Action)(() => repoForSystemScopedResource.Create(resource).Wait()));
+            Assert.DoesNotThrow((Action)(() => repoForSystemScopedResource.Create(resource, CancellationToken.None).Wait()));
         }
 
         private ProjectResource CreateSpaceResourceForSpace(string spaceId)
@@ -264,13 +264,13 @@ namespace Octopus.Client.Tests.Repositories.Async
         public static void SetupScopeAsUnspecified(this IOctopusAsyncRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
-            repo.LoadSpaceRootDocument().Returns(new SpaceRootResource());
+            repo.LoadSpaceRootDocument(Arg.Any<CancellationToken>()).Returns(new SpaceRootResource());
         }
 
         public static void SetupScopeAsUnspecifiedWithDefaultSpaceDisabled(this IOctopusAsyncRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
-            repo.LoadSpaceRootDocument().Returns((SpaceRootResource)null);
+            repo.LoadSpaceRootDocument(Arg.Any<CancellationToken>()).Returns((SpaceRootResource)null);
         }
     }
 

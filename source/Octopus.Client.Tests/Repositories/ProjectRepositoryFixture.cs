@@ -45,7 +45,7 @@ namespace Octopus.Client.Tests.Repositories
             };
 
             // Act
-            await asyncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty);
+            await asyncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty, CancellationToken.None);
             syncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty);
 
             // Assert
@@ -64,7 +64,7 @@ namespace Octopus.Client.Tests.Repositories
             };
 
             // Act
-            await asyncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty);
+            await asyncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty, CancellationToken.None);
             syncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty);
 
             // Assert
@@ -83,7 +83,7 @@ namespace Octopus.Client.Tests.Repositories
             };
 
             // Act
-            await asyncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty);
+            await asyncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty, CancellationToken.None);
             syncRepository.Projects.ConvertToGit(project, new GitPersistenceSettingsResource(), string.Empty);
 
             // Assert

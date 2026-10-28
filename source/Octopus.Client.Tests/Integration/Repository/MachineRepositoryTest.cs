@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using Nancy;
 using Nancy.Extensions;
 using Newtonsoft.Json;
@@ -52,7 +53,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         {
             var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}" } } };
             var repository = new MachineRepository(new OctopusAsyncRepository(AsyncClient));
-            var tasks = repository.GetTasks(machine).Result;
+            var tasks = repository.GetTasks(machine, CancellationToken.None).Result;
 
             Assert.That(tasks.Count, Is.EqualTo(139));
         }

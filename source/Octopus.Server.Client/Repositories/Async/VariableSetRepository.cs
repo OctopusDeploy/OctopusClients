@@ -57,7 +57,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<VariableSetResource> Get(ProjectResource projectResource, CancellationToken cancellationToken)
         {
-            return await Get(projectResource, null, CancellationToken.None);
+            return await Get(projectResource, null, cancellationToken);
         }
 
         public async Task<VariableSetResource> Get(ProjectResource projectResource, string gitRef, CancellationToken cancellationToken)

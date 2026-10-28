@@ -46,7 +46,7 @@ namespace Octopus.Client.Tests.Repositories
             };
 
             // Act
-            await repository.Projects.Beta().MigrateVariablesToGit(project, "branchy-branch", "Test commit message");
+            await repository.Projects.Beta().MigrateVariablesToGit(project, "branchy-branch", "Test commit message", CancellationToken.None);
 
             // Assert
             urlUsed.Should().Be(migrateLink);
@@ -70,7 +70,7 @@ namespace Octopus.Client.Tests.Repositories
             };
 
             // Act + Assert
-            await repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).Should().ThrowAsync<NotSupportedException>().WithMessage("*already been migrated*");
+            await repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message", CancellationToken.None)).Should().ThrowAsync<NotSupportedException>().WithMessage("*already been migrated*");
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace Octopus.Client.Tests.Repositories
             var project = new ProjectResource();
 
             // Act + Assert
-            await repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).Should().ThrowAsync<NotSupportedException>().WithMessage("*not available*");
+            await repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message", CancellationToken.None)).Should().ThrowAsync<NotSupportedException>().WithMessage("*not available*");
         }
     }
 }

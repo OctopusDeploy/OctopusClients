@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -45,7 +46,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public void GetReturnsAValue()
         {
-            var dto = AsyncClient.Get<TestDto>("~/").Result;
+            var dto = AsyncClient.Get<TestDto>("~/", CancellationToken.None).Result;
             dto.Value.Should().Be("42");
         }
 
@@ -53,7 +54,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task PostingAObjectWorks()
         {
             _lastMethod = null;
-            Func<Task> post = () => AsyncClient.Post("~/", new TestDto { Value = "Foo" });
+            Func<Task> post = () => AsyncClient.Post("~/", new TestDto { Value = "Foo" }, CancellationToken.None);
             await post.Should().NotThrowAsync();
             _lastMethod.Should().Be("Post");
         }
@@ -62,7 +63,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task PuttingAObjectWorks()
         {
             _lastMethod = null;
-            Func<Task> put = () => AsyncClient.Put("~/", new TestDto { Value = "Foo" });
+            Func<Task> put = () => AsyncClient.Put("~/", new TestDto { Value = "Foo" }, CancellationToken.None);
             await put.Should().NotThrowAsync();
             _lastMethod.Should().Be("Put");
         }
@@ -71,7 +72,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task DeleteReachesTheServer()
         {
             _lastMethod = null;
-            Func<Task> delete = () => AsyncClient.Delete("~/");
+            Func<Task> delete = () => AsyncClient.Delete("~/", CancellationToken.None);
             await delete.Should().NotThrowAsync();
             _lastMethod.Should().Be("Delete");
         }

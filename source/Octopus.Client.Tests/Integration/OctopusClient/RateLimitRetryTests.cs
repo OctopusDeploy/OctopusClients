@@ -66,7 +66,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var sw = Stopwatch.StartNew();
 
-            var result = await AsyncClient.Get<string>("~/retryafter");
+            var result = await AsyncClient.Get<string>("~/retryafter", CancellationToken.None);
 
             result.Should().Be("Success");
             retryAfterRequests.Should().Be(3);
@@ -87,9 +87,10 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var configuredClient = await OctopusAsyncClient.Create(
                 new OctopusServerEndpoint(HostBaseUri + TestRootPath),
+                CancellationToken.None,
                 new OctopusClientOptions { RateLimitRetryCount = 0 });
 
-            Func<Task> act = () => configuredClient.Get<string>("~/retryafter");
+            Func<Task> act = () => configuredClient.Get<string>("~/retryafter", CancellationToken.None);
 
             var ex = (await act.Should().ThrowAsync<OctopusException>()).Subject.Single();
             ex.HttpStatusCode.Should().Be(429);
@@ -117,7 +118,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var sw = Stopwatch.StartNew();
 
-            var result = await AsyncClient.Get<string>($"~/noretryafterheader");
+            var result = await AsyncClient.Get<string>($"~/noretryafterheader", CancellationToken.None);
 
             result.Should().Be("Success");
             noRetryAfterHeaderRequests.Should().Be(2);
@@ -127,7 +128,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task AsyncClientGivesUpAfterTheConfiguredNumberOfRetries()
         {
-            Func<Task> get = () => AsyncClient.Get<string>($"~/alwayslimited");
+            Func<Task> get = () => AsyncClient.Get<string>($"~/alwayslimited", CancellationToken.None);
 
             await get.Should().ThrowAsync<OctopusException>();
 

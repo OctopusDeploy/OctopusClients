@@ -29,7 +29,7 @@ namespace Octopus.Client.Tests.Repositories.Async
 
             var callbackCount = 0;
 
-            Action<TaskResource[]> action = t =>
+            Action<TaskResource[], CancellationToken> action = (t, _) =>
             {
                 t[0].Should().Be(taskResource);
                 callbackCount++;
@@ -40,7 +40,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             };
 
 
-            var wait = repository.WaitForCompletion(taskResource, pollIntervalSeconds: 1, timeoutAfterMinutes: 1, interval: action);
+            var wait = repository.WaitForCompletion(taskResource, CancellationToken.None, pollIntervalSeconds: 1, timeoutAfterMinutes: 1, interval: action);
             wait.Wait(TimeSpan.FromSeconds(30));
 
             callbackCount.Should().BeGreaterThan(3);
@@ -58,7 +58,7 @@ namespace Octopus.Client.Tests.Repositories.Async
 
             var callbackCount = 0;
 
-            Func<TaskResource[], Task> func = t => Task.Run(() =>
+            Func<TaskResource[], CancellationToken, Task> func = (t, ct) => Task.Run(() =>
             {
                 t[0].Should().Be(taskResource);
                 callbackCount++;
@@ -66,9 +66,9 @@ namespace Octopus.Client.Tests.Repositories.Async
                 {
                     State = callbackCount > 3 ? TaskState.Success : TaskState.Executing
                 };
-            });
+            }, ct);
 
-            var wait = repository.WaitForCompletion(new[] { taskResource }, pollIntervalSeconds: 1, timeoutAfter: TimeSpan.FromSeconds(10), interval: func);
+            var wait = repository.WaitForCompletion(new[] { taskResource }, CancellationToken.None, pollIntervalSeconds: 1, timeoutAfter: TimeSpan.FromSeconds(10), interval: func);
             wait.Wait(TimeSpan.FromSeconds(30));
 
             callbackCount.Should().BeGreaterThan(3);
@@ -88,7 +88,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             {
                 try
                 {
-                    var wait = repository.WaitForCompletion(new[] { taskResource }, pollIntervalSeconds: 1,
+                    var wait = repository.WaitForCompletion(new[] { taskResource }, CancellationToken.None, pollIntervalSeconds: 1,
                         timeoutAfter: TimeSpan.FromSeconds(3));
                     wait.Wait(TimeSpan.FromSeconds(30));
                 }

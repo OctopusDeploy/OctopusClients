@@ -149,7 +149,7 @@ namespace Octopus.Client.Tests.Integration
         public virtual async Task Setup()
         {
             SetupEnvironmentVariables();
-            AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
+            AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), CancellationToken.None, GetClientOptions()).ConfigureAwait(false);
             SyncClient = new Octopus.Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
         }
 

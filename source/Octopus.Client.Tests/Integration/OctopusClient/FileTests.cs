@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -64,7 +65,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     FileName = "foo.txt"
                 };
                 _recieved = false;
-                await AsyncClient.Post("~/", file).ConfigureAwait(false);
+                await AsyncClient.Post("~/", file, CancellationToken.None).ConfigureAwait(false);
                 _recieved.Should().BeTrue();
             }
         }

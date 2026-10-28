@@ -79,7 +79,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldThrowIfWorkerPoolNameNotFound()
         {
             operation.WorkerPoolNames = new[] { "Atlantis" };
-            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pool named Atlantis on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
         }
 
@@ -98,7 +98,7 @@ namespace Octopus.Client.Tests.Operations
 
             operation.WorkerPoolNames = new[] { "Atlantis" };
             operation.WorkerPools = new[] { "MyWorkerPool" };
-            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pool named Atlantis on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
         }
 
@@ -117,7 +117,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldThrowIfWorkerPoolNotFoundBySlug()
         {
             operation.WorkerPools = new[] { "atlantis-slug" };
-            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pool with name, slug or Id atlantis-slug on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
         }
 
@@ -133,7 +133,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldThrowIfWorkerPoolNotFoundByIdOrSlug()
         {
             operation.WorkerPools = new[] { "WorkerPools-12345", "atlantis-slug" };
-            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pools with names, slugs or Ids: WorkerPools-12345, atlantis-slug on the Octopus Server. Ensure the worker pools exist and you have permission to access them.");
         }
 
@@ -151,7 +151,7 @@ namespace Octopus.Client.Tests.Operations
             workerPools.Items.Add(new WorkerPoolResource { Id = "WorkerPools-2", Name = "MyWorkerPool", Links = LinkCollection.Self("/api/workerpools/WorkerPools-2") });
 
             operation.WorkerPools = new[] { "WorkerPools-2", "Atlantis", "ImaginaryPool" };
-            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pools with names, slugs or Ids: Atlantis, ImaginaryPool on the Octopus Server. Ensure the worker pools exist and you have permission to access them.");
         }
 
@@ -178,7 +178,7 @@ namespace Octopus.Client.Tests.Operations
             operation.TentacleHostname = "myworker.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/workers", Arg.Is<WorkerResource>(m =>
                     m.Name == "MyWorker"
@@ -224,7 +224,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.WorkerPools = new[] { "workerpool-1", "PoolB" };
 
-            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>();
         }
 
@@ -263,7 +263,7 @@ namespace Octopus.Client.Tests.Operations
             operation.WorkerPools = new[] { "workerpool-1", "PoolB" };
             operation.AllowOverwrite = true;
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/workers/Worker-1", Arg.Is<WorkerResource>(m =>
                         m.Name == "ExistingWorker"
@@ -311,7 +311,7 @@ namespace Octopus.Client.Tests.Operations
             operation.WorkerPoolNames = new[] { "PoolA" };
             operation.WorkerPools = new[] { "workerpool-slug-1", "workerpool-slug-2" };
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/workers", Arg.Is<WorkerResource>(m =>
                         m.Name == "MyWorker"

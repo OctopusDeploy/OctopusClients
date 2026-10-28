@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -33,7 +34,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             using (var ms = new MemoryStream(SharedBytes))
             {
                 _recieved = false;
-                Func<Task> post = () => AsyncClient.Post("~/", ms);
+                Func<Task> post = () => AsyncClient.Post("~/", ms, CancellationToken.None);
                 await post.Should().NotThrowAsync();
                 _recieved.Should().BeTrue();
             }

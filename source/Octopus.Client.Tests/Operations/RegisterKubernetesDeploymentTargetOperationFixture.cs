@@ -83,7 +83,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] { "Production" };
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
         }
@@ -105,7 +105,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "Production" };
             operation.SubscriptionId = new Uri("poll://ckyhfyfkcbmzjl8sfgch/");
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
         }
@@ -138,7 +138,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "Production" };
             operation.ProxyName = "MyNewProxy";
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             var thing = updatedMachines.Should().ContainSingle().Which;
 
@@ -168,7 +168,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "Production" };
             operation.AllowOverwrite = true;
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
@@ -180,7 +180,7 @@ namespace Octopus.Client.Tests.Operations
         [Test]
         public async Task ShouldCreateWhenCantDeserializeMachines()
         {
-            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>()))
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Throw(new OctopusDeserializationException(1, "Can not deserialize"));
 
             environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
@@ -193,7 +193,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] { "Production" };
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"
@@ -218,7 +218,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "Production" };
             operation.AllowOverwrite = true;
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
@@ -245,7 +245,7 @@ namespace Octopus.Client.Tests.Operations
             operation.AllowOverwrite = true;
             operation.MachinePolicy = "Machine Policy 2";
 
-            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"

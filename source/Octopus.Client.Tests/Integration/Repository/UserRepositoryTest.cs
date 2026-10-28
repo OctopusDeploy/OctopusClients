@@ -56,7 +56,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         {
             var repository = new UserRepository(new OctopusAsyncRepository(AsyncClient));
 
-            var userResource = await repository.Create("new-username", "new-displayname");
+            var userResource = await repository.Create("new-username", "new-displayname", CancellationToken.None);
 
             userResource.IsActive.Should().BeTrue();
         }
@@ -72,7 +72,7 @@ namespace Octopus.Client.Tests.Integration.Repository
                 DisplayName = "new-displayname",
                 // deliberately not setting IsActive
             };
-            var userResource = await repository.Create(inputResource);
+            var userResource = await repository.Create(inputResource, CancellationToken.None);
 
             userResource.IsActive.Should().BeTrue();
         }
@@ -88,7 +88,7 @@ namespace Octopus.Client.Tests.Integration.Repository
                 DisplayName = "new-displayname",
                 IsActive = true
             };
-            var userResource = await repository.Create(inputResource);
+            var userResource = await repository.Create(inputResource, CancellationToken.None);
 
             userResource.IsActive.Should().BeTrue();
         }
@@ -104,7 +104,7 @@ namespace Octopus.Client.Tests.Integration.Repository
                 DisplayName = "new-displayname",
                 IsActive = false
             };
-            var userResource = await repository.Create(inputResource);
+            var userResource = await repository.Create(inputResource, CancellationToken.None);
 
             userResource.IsActive.Should().BeFalse();
         }
@@ -114,7 +114,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         {
             var repository = new UserRepository(new OctopusAsyncRepository(AsyncClient));
 
-            var userResource = await repository.CreateServiceAccount("new-username", "new-displayname");
+            var userResource = await repository.CreateServiceAccount("new-username", "new-displayname", CancellationToken.None);
 
             userResource.IsActive.Should().BeTrue();
         }

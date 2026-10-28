@@ -93,7 +93,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldThrowIfEnvironmentNameNotFound()
         {
             operation.EnvironmentNames = new[] { "Atlantis" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
 
@@ -104,7 +104,7 @@ namespace Octopus.Client.Tests.Operations
 
             operation.EnvironmentNames = new[] { "Atlantis" };
             operation.Environments = new[] { "Production" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
 
@@ -112,7 +112,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldThrowIfEnvironmentNotFoundBySlug()
         {
             operation.Environments = new[] { "atlantis-slug" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment with name, slug or Id atlantis-slug on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
 
@@ -120,7 +120,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldThrowIfEnvironmentNotFoundByIdOrSlug()
         {
             operation.Environments = new[] { "Environments-12345", "atlantis-slug" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments with names, slugs or Ids: Environments-12345, atlantis-slug on the Octopus Server. Ensure the environments exist and you have permission to access them.");
         }
 
@@ -130,7 +130,7 @@ namespace Octopus.Client.Tests.Operations
             environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             operation.EnvironmentNames = new[] { "Production", "Atlantis", "Hyperborea" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus Server. Ensure the environments exist and you have permission to access them.");
         }
 
@@ -140,7 +140,7 @@ namespace Octopus.Client.Tests.Operations
             tenants.Items.Add(new TenantResource { Id = "Tenants-2", Name = "MyTenant", Slug = "my-tenant", Links = LinkCollection.Self("/api/environments/tenants-2") });
 
             operation.Tenants = new[] { "some-tenant", "Atlantis", "MyTenant" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the tenants with names, slugs or Ids: some-tenant, Atlantis on the Octopus Server. Ensure the tenants exist and you have permission to access them.");
         }
 
@@ -152,7 +152,7 @@ namespace Octopus.Client.Tests.Operations
             tenants.Items.Add(new TenantResource { Id = "Tenants-3", Name = "Atlantis", Slug = "atlantis", Links = LinkCollection.Self("/api/environments/tenants-3") });
 
             operation.Tenants = new[] { "Atlantis", "Tenants-1", "some-tenant" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().NotThrowAsync();
         }
 
@@ -169,7 +169,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] { "Production" };
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                     m.Name == "Mymachine"
@@ -194,7 +194,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] { "Production" };
 
-            Func<Task> exec = () => operation.ExecuteAsync(repository);
+            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>();
         }
 
@@ -214,7 +214,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "Production" };
             operation.AllowOverwrite = true;
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
@@ -226,7 +226,7 @@ namespace Octopus.Client.Tests.Operations
         [Test]
         public async Task ShouldCreateWhenCantDeserializeMachines()
         {
-            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>()))
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Throw(new OctopusDeserializationException(1, "Can not deserialize"));
 
             environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
@@ -239,7 +239,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] { "Production" };
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"
@@ -264,7 +264,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "Production" };
             operation.AllowOverwrite = true;
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
@@ -291,7 +291,7 @@ namespace Octopus.Client.Tests.Operations
             operation.AllowOverwrite = true;
             operation.MachinePolicy = "Machine Policy 2";
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
@@ -315,7 +315,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] { "UAT" };
             operation.Environments = new[] { "env-uat", "environments-2" };
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                         m.Name == "Mymachine"
@@ -338,7 +338,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.Environments = new[] { "Staging", "pr-123" };
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                     m.Name == "Mymachine"
@@ -362,7 +362,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.Environments = new[] { "Production" };
 
-            await operation.ExecuteAsync(repository).ConfigureAwait(false);
+            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                     m.Name == "Mymachine"

@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -20,7 +21,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task GetStream()
         {
-            using (var stream = await AsyncClient.Get<Stream>("~/").ConfigureAwait(false))
+            using (var stream = await AsyncClient.Get<Stream>("~/", CancellationToken.None).ConfigureAwait(false))
             using (var reader = new StreamReader(stream))
             using (var jsonReader = new JsonTextReader(reader))
             {
@@ -35,7 +36,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task GetByteArray()
         {
-            var bytes = await AsyncClient.Get<byte[]>("~/").ConfigureAwait(false);
+            var bytes = await AsyncClient.Get<byte[]>("~/", CancellationToken.None).ConfigureAwait(false);
             var json = Encoding.UTF8.GetString(bytes);
             JsonConvert.DeserializeObject<TestDto>(json)
                 .Value
@@ -46,7 +47,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task GetContent()
         {
-            using var s = await AsyncClient.GetContent("~/").ConfigureAwait(false);
+            using var s = await AsyncClient.GetContent("~/", CancellationToken.None).ConfigureAwait(false);
             using var ms = new MemoryStream();
 
             await s.CopyToAsync(ms);

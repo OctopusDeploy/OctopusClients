@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Authentication;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -24,7 +25,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             OctopusAsyncRepository.SecondsToWaitForServerToStart = 2;
             try
             {
-                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath)).ConfigureAwait(false);
+                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath), CancellationToken.None).ConfigureAwait(false);
                 Assert.Fail("Exception expected");
             }
             catch (Exception ex)
@@ -43,9 +44,10 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 var client = await OctopusAsyncClient.Create(
                     new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
+                    CancellationToken.None,
                     new OctopusClientOptions() { IgnoreSslErrors = true }
                 ).ConfigureAwait(false);
-                var result = await client.Get<string>("~/").ConfigureAwait(false);
+                var result = await client.Get<string>("~/", CancellationToken.None).ConfigureAwait(false);
 
                 result.Should().Be("Data");
             }
