@@ -217,7 +217,7 @@ jobs:
 
       - name: Login to Octopus Deploy 🐙
         if: ${{ steps.release-check.outputs.skip == 'false' }}
-        uses: OctopusDeploy/login@5e2331a069ebc144b20ded22766dfce025dd9e73 # v2
+        uses: OctopusDeploy/login@b6156b03b4b892ffc8e9c57d098e9fe1866dcdb3 # v2
         with:
           server: ${{ secrets.OCTOPUS_URL }}
           service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
