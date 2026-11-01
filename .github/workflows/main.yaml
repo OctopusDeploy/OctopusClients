@@ -232,7 +232,7 @@ jobs:
 
       - name: Create Release in Octopus 🐙
         if: ${{ steps.release-check.outputs.skip == 'false' }}
-        uses: OctopusDeploy/create-release-action@2fceebb1d9cc8624d726a77e2faf93948de6741d # v4
+        uses: OctopusDeploy/create-release-action@8c532ccb330c3964ea8729c35e4e232c46d1f77f # v4
         with:
           project: "Octopus.Client"
           packages: |
