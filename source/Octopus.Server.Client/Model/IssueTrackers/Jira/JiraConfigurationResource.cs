@@ -25,13 +25,13 @@ namespace Octopus.Client.Model.IssueTrackers.Jira
         [Writeable]
         public string? BaseUrl { get; set; }
 
-        [DisplayName("Jira Connect App Password")]
-        [Description("Set the password for authenticating with the Jira Connect App")]
+        [DisplayName("Jira App Password")]
+        [Description("Set the password for authenticating with the Jira App")]
         [Writeable]
         public SensitiveValue? Password { get; set; }
 
         [DisplayName("Octopus Installation Id")]
-        [Description("Use this Id when configuring the Jira connect application")]
+        [Description("Use this Id when configuring the Jira application")]
         [ReadOnly(true)]
         public string OctopusInstallationId { get; set; }
 
