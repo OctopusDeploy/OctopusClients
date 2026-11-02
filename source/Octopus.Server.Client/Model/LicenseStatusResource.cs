@@ -76,6 +76,8 @@ namespace Octopus.Client.Model
         public string EffectiveLimitDescription { get; set; }
         public string LicenseLimitDescription { get; set; }
         public bool IsUnlimited { get; set; }
+        public bool IsEnforced { get; set; }
+        public bool CanExceedWithUsageReporting { get; set; }
         public int CurrentUsage { get; set; }
         public string Message { get; set; }
 

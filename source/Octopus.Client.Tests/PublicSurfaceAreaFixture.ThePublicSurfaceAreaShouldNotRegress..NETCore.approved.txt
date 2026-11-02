@@ -4043,10 +4043,12 @@ Octopus.Client.Model
   class LicenseLimitStatusResource
   {
     .ctor()
+    Boolean CanExceedWithUsageReporting { get; set; }
     Int32 CurrentUsage { get; set; }
     String Disposition { get; set; }
     Int32 EffectiveLimit { get; set; }
     String EffectiveLimitDescription { get; set; }
+    Boolean IsEnforced { get; set; }
     Boolean IsUnlimited { get; set; }
     Int32 LicensedLimit { get; set; }
     String LicenseLimitDescription { get; set; }
@@ -6286,6 +6288,7 @@ Octopus.Client.Model
     .ctor()
     Boolean Enabled { get; set; }
     Boolean IsTelemetryEnforced { get; set; }
+    String Mode { get; set; }
     DateTimeOffset ShowAsNewUntil { get; set; }
   }
   TenantedDeploymentMode
