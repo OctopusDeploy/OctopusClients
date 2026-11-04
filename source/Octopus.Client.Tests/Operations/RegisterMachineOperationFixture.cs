@@ -27,6 +27,7 @@ namespace Octopus.Client.Tests.Operations
         ResourceCollection<TenantResource> tenants;
         ResourceCollection<MachineResource> machines;
         ResourceCollection<MachinePolicyResource> machinePolicies;
+        RootResource rootDocument;
 
         [SetUp]
         public void SetUp()
@@ -41,7 +42,7 @@ namespace Octopus.Client.Tests.Operations
             machines = new ResourceCollection<MachineResource>(Array.Empty<MachineResource>(), LinkCollection.Self("/foo"));
             machinePolicies = new ResourceCollection<MachinePolicyResource>(Array.Empty<MachinePolicyResource>(), LinkCollection.Self("/foo"));
 
-            var rootDocument = new RootResource
+            rootDocument = new RootResource
             {
                 ApiVersion = "3.0.0",
                 Version = "2099.0.0",
@@ -64,6 +65,7 @@ namespace Octopus.Client.Tests.Operations
             };
 
             client.Get<RootResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(rootDocument);
+            client.Repository.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(rootDocument);
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>()).Returns(spaceRootDocument);
 
             repository = new OctopusAsyncRepository(client, RepositoryScope.ForSpace(someSpace));
@@ -345,6 +347,83 @@ namespace Octopus.Client.Tests.Operations
                     && m.EnvironmentIds.SequenceEqual(new[] { "environments-parent-1", "environments-eph-1" })),
                     Arg.Any<object>(), Arg.Any<CancellationToken>())
                 .ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task ShouldResolveEnvironmentsViaV2UsingDefaultSpaceWhenRepositoryIsNotSpaceScoped()
+        {
+            var unscopedRepository = CreateUnscopedRepository(new SpaceResource
+            {
+                Id = "Spaces-1",
+                IsDefault = true,
+                Links = LinkCollection.Self("/api/spaces/Spaces-1").Add("SpaceHome", "/api/spaces/Spaces-1/spaceHome")
+            });
+            parentEnvironments.Add(new ParentEnvironmentV2Resource { Id = "environments-parent-1", Name = "Staging", Slug = "staging" });
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.Environments = new[] { "Staging" };
+
+            await operation.ExecuteAsync(unscopedRepository, CancellationToken.None).ConfigureAwait(false);
+
+            await client.Received().Get<PaginatedCollection<BaseEnvironmentV2Resource>>(
+                    Arg.Any<string>(),
+                    Arg.Is<object>(o => (string)o.GetType().GetProperty("spaceId").GetValue(o) == "Spaces-1"),
+                    Arg.Any<CancellationToken>())
+                .ConfigureAwait(false);
+            await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                    m.Name == "Mymachine"
+                    && m.EnvironmentIds.SequenceEqual(new[] { "environments-parent-1" })),
+                    Arg.Any<object>(), Arg.Any<CancellationToken>())
+                .ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task ShouldFallBackToV1WhenRepositoryIsNotSpaceScopedAndServerDoesNotSupportSpaces()
+        {
+            var unscopedRepository = new OctopusAsyncRepository(client, RepositoryScope.Unspecified());
+            rootDocument.Links
+                .Add("Environments", "/api/environments")
+                .Add("Machines", "/api/machines")
+                .Add("MachinePolicies", "/api/machinepolicies");
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.Environments = new[] { "Production" };
+
+            await operation.ExecuteAsync(unscopedRepository, CancellationToken.None).ConfigureAwait(false);
+
+            await client.DidNotReceive().Get<PaginatedCollection<BaseEnvironmentV2Resource>>(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>())
+                .ConfigureAwait(false);
+            await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                    m.Name == "Mymachine"
+                    && m.EnvironmentIds.SequenceEqual(new[] { "environments-2" })),
+                    Arg.Any<object>(), Arg.Any<CancellationToken>())
+                .ConfigureAwait(false);
+        }
+
+        OctopusAsyncRepository CreateUnscopedRepository(params SpaceResource[] userSpaces)
+        {
+            rootDocument.Links
+                .Add("Spaces", "/api/spaces")
+                .Add("CurrentUser", "/api/users/me");
+
+            var currentUser = new UserResource
+            {
+                Id = "Users-1",
+                Links = LinkCollection.Self("/api/users/Users-1").Add("Spaces", "/api/users/Users-1/spaces")
+            };
+            client.Get<UserResource>("/api/users/me", Arg.Any<CancellationToken>()).Returns(currentUser);
+            client.Get<SpaceResource[]>("/api/users/Users-1/spaces", Arg.Any<CancellationToken>()).Returns(userSpaces);
+
+            return new OctopusAsyncRepository(client, RepositoryScope.Unspecified());
         }
 
         [Test]

@@ -6,6 +6,7 @@ using System.Threading;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
+using Octopus.Client.Util;
 
 namespace Octopus.Client
 {
@@ -294,31 +295,13 @@ namespace Octopus.Client
                 () => null,
                 () =>
                 {
-                    var defaultSpace = TryGetDefaultSpace();
+                    var defaultSpace = DefaultSpaceResolver.TryGetDefaultSpace(Client, loadRootResource.Value);
                     return defaultSpace != null ? LoadSpaceRootResourceFor(defaultSpace) : null;
                 });
 
             SpaceRootResource LoadSpaceRootResourceFor(SpaceResource space)
             {
                 return Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new { space.Id });
-            }
-
-            SpaceResource TryGetDefaultSpace()
-            {
-                var rootResource = loadRootResource.Value;
-                var spacesIsSupported = rootResource.HasLink("Spaces");
-                if (!spacesIsSupported)
-                    return null;
-                try
-                {
-                    var currentUser = Client.Get<UserResource>(rootResource.Links["CurrentUser"]);
-                    var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                    return userSpaces.SingleOrDefault(s => s.IsDefault);
-                }
-                catch (OctopusSecurityException)
-                {
-                    return null;
-                }
             }
         }
     }

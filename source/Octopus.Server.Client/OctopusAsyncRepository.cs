@@ -8,6 +8,7 @@ using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Octopus.Client.Tasks;
+using Octopus.Client.Util;
 
 namespace Octopus.Client
 {
@@ -311,7 +312,8 @@ namespace Octopus.Client
                 () => Task.FromResult<SpaceRootResource>(null),
                 async () =>
                 {
-                    var defaultSpace = await TryGetDefaultSpace().ConfigureAwait(false);
+                    var rootDocument = await loadRootResource.Value(cancellationToken).ConfigureAwait(false);
+                    var defaultSpace = await DefaultSpaceResolver.TryGetDefaultSpaceAsync(Client, rootDocument, cancellationToken).ConfigureAwait(false);
                     return defaultSpace != null
                         ? await LoadSpaceRootResourceFor(defaultSpace).ConfigureAwait(false)
                         : null;
@@ -320,26 +322,6 @@ namespace Octopus.Client
             async Task<SpaceRootResource> LoadSpaceRootResourceFor(SpaceResource space)
             {
                 return await Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new { space.Id }, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            async Task<SpaceResource> TryGetDefaultSpace()
-            {
-                var rootDocument = await loadRootResource.Value(cancellationToken).ConfigureAwait(false);
-                var spacesIsSupported = rootDocument.HasLink("Spaces");
-                if (!spacesIsSupported)
-                {
-                    return null;
-                }
-                try
-                {
-                    var currentUser = await Client.Get<UserResource>(rootDocument.Links["CurrentUser"], cancellationToken).ConfigureAwait(false);
-                    var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"], cancellationToken).ConfigureAwait(false);
-                    return userSpaces.SingleOrDefault(s => s.IsDefault);
-                }
-                catch (OctopusSecurityException)
-                {
-                    return null;
-                }
             }
         }
     }

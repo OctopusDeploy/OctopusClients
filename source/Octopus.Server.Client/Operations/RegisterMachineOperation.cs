@@ -165,15 +165,19 @@ namespace Octopus.Client.Operations
         {
             try
             {
-                return GetEnvironmentsV2.FindIds(repository, identifiers, CouldNotFindByMultipleMessage);
+                var environmentIds = GetEnvironmentsV2.TryFindIds(repository, identifiers, CouldNotFindByMultipleMessage);
+                if (environmentIds is not null)
+                    return environmentIds;
             }
             catch (OctopusResourceNotFoundException)
             {
-                return repository.Environments
-                    .FindByNameIdOrSlugs<EnvironmentResource, IEnvironmentRepository>(
-                        identifiers, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
-                    .Select(e => e.Id).ToList();
+                // The server doesn't support the v2 environments endpoint, so fall back to the v1 endpoint
             }
+
+            return repository.Environments
+                .FindByNameIdOrSlugs<EnvironmentResource, IEnvironmentRepository>(
+                    identifiers, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
+                .Select(e => e.Id).ToList();
         }
 
 
@@ -305,16 +309,20 @@ namespace Octopus.Client.Operations
         {
             try
             {
-                return await GetEnvironmentsV2.FindIdsAsync(repository, identifiers, CouldNotFindByMultipleMessage, cancellationToken).ConfigureAwait(false);
+                var environmentIds = await GetEnvironmentsV2.TryFindIdsAsync(repository, identifiers, CouldNotFindByMultipleMessage, cancellationToken).ConfigureAwait(false);
+                if (environmentIds is not null)
+                    return environmentIds;
             }
             catch (OctopusResourceNotFoundException)
             {
-                var fallback = await repository.Environments
-                    .FindByNameIdOrSlugs<EnvironmentResource, IAsyncEnvironmentRepository>(
-                        identifiers, cancellationToken, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
-                    .ConfigureAwait(false);
-                return fallback.Select(e => e.Id).ToList();
+                // The server doesn't support the v2 environments endpoint, so fall back to the v1 endpoint
             }
+
+            var fallback = await repository.Environments
+                .FindByNameIdOrSlugs<EnvironmentResource, IAsyncEnvironmentRepository>(
+                    identifiers, cancellationToken, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
+                .ConfigureAwait(false);
+            return fallback.Select(e => e.Id).ToList();
         }
 
         async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
@@ -346,9 +354,17 @@ namespace Octopus.Client.Operations
         {
             const string RouteTemplate = "~/api/{spaceId}/environments/v2{?type,skip,take}";
 
-            public static List<string> FindIds(IOctopusSpaceRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
+            /// <summary>
+            /// Resolves environment ids using the v2 environments endpoint.
+            /// Returns null if no space could be resolved (e.g. the server doesn't support spaces, or the user has no default space),
+            /// in which case the caller should fall back to the v1 environments endpoint.
+            /// </summary>
+            public static List<string> TryFindIds(IOctopusSpaceRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
             {
-                var spaceId = ResolveSpaceId(repository.Scope);
+                var spaceId = ResolveSpaceId(repository);
+                if (spaceId is null)
+                    return null;
+
                 var all = repository.Client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(
                     RouteTemplate,
                     new
@@ -361,9 +377,13 @@ namespace Octopus.Client.Operations
                 return MatchEnvironmentIdentifiers(all.Items, identifiers, missingErrorGenerator);
             }
 
-            public static async Task<List<string>> FindIdsAsync(IOctopusSpaceAsyncRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator, CancellationToken cancellationToken)
+            /// <inheritdoc cref="TryFindIds"/>
+            public static async Task<List<string>> TryFindIdsAsync(IOctopusSpaceAsyncRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator, CancellationToken cancellationToken)
             {
-                var spaceId = ResolveSpaceId(repository.Scope);
+                var spaceId = await ResolveSpaceIdAsync(repository, cancellationToken).ConfigureAwait(false);
+                if (spaceId is null)
+                    return null;
+
                 var all = await repository.Client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(
                     RouteTemplate,
                     new
@@ -377,12 +397,33 @@ namespace Octopus.Client.Operations
                 return MatchEnvironmentIdentifiers(all.Items, identifiers, missingErrorGenerator);
             }
 
-            static string ResolveSpaceId(RepositoryScope repositoryScope)
+            static string ResolveSpaceId(IOctopusSpaceRepository repository)
             {
-                return repositoryScope.Apply(
+                return repository.Scope.Apply(
                     space => space.Id,
                     () => throw new SpaceScopedOperationInSystemContextException(),
-                    () => throw new Exception("Could not resolve the v2 environments endpoint without an explicit space context. Use client.ForSpace(space) to select a space first."));
+                    () => TryGetDefaultSpaceId(repository));
+            }
+
+            static Task<string> ResolveSpaceIdAsync(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
+            {
+                return repository.Scope.Apply(
+                    space => Task.FromResult(space.Id),
+                    () => throw new SpaceScopedOperationInSystemContextException(),
+                    () => TryGetDefaultSpaceIdAsync(repository, cancellationToken));
+            }
+
+            static string TryGetDefaultSpaceId(IOctopusSpaceRepository repository)
+            {
+                var rootDocument = repository.Client.Repository.LoadRootDocument();
+                return DefaultSpaceResolver.TryGetDefaultSpace(repository.Client, rootDocument)?.Id;
+            }
+
+            static async Task<string> TryGetDefaultSpaceIdAsync(IOctopusSpaceAsyncRepository repository, CancellationToken cancellationToken)
+            {
+                var rootDocument = await repository.Client.Repository.LoadRootDocument(cancellationToken).ConfigureAwait(false);
+                var defaultSpace = await DefaultSpaceResolver.TryGetDefaultSpaceAsync(repository.Client, rootDocument, cancellationToken).ConfigureAwait(false);
+                return defaultSpace?.Id;
             }
 
             static List<string> MatchEnvironmentIdentifiers(IList<BaseEnvironmentV2Resource> all, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
