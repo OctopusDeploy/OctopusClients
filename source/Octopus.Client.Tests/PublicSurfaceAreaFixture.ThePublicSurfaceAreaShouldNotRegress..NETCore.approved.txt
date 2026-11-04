@@ -5095,6 +5095,7 @@ Octopus.Client.Model
   {
     .ctor(String, String)
     Boolean IsShared { get; set; }
+    Boolean ManagedChannelsAndLifecycles { get; set; }
     String Slug { get; set; }
     String VersionMask { get; set; }
   }

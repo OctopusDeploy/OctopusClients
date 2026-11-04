@@ -20,5 +20,11 @@ namespace Octopus.Client.Model
 
         [JsonProperty(Order = 3)]
         public bool IsShared { get; set; }
+
+        /// <summary>
+        /// True when the resolved template version manages channels and lifecycles. Output only; ignored on input.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        public bool ManagedChannelsAndLifecycles { get; set; }
     }
 }
