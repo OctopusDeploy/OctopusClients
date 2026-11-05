@@ -139,7 +139,7 @@ jobs:
 
       - name: Run unit tests (net8.0) 🏗
         shell: bash
-        run: dotnet test --project ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration Release --report-trx --report-trx-filename Linux_net8.0.trx --results-directory ./TestResults
+        run: dotnet test --project ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration Release --report-trx --report-trx-filename Linux_net8.0_results.trx --results-directory ./TestResults
 
       - name: Linux unit test report
         uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3.2.0

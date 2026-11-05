@@ -171,7 +171,7 @@ class Build : NukeBuild
                         .SetFramework(framework)
                         .SetConfiguration(Configuration)
                         .EnableNoBuild()
-                        .AddProcessAdditionalArguments("--report-trx", "--report-trx-filename", $"Win_{framework}.trx")
+                        .AddProcessAdditionalArguments("--report-trx", "--report-trx-filename", $"Win_{framework}_results.trx")
                         .SetResultsDirectory("./TestResults/"));
                 }
             });
@@ -264,7 +264,7 @@ class Build : NukeBuild
                     .SetFramework(framework)
                     .SetConfiguration(Configuration)
                     .EnableNoBuild()
-                    .AddProcessAdditionalArguments("--report-trx", "--report-trx-filename", $"Win-E2E_{framework}.trx")
+                    .AddProcessAdditionalArguments("--report-trx", "--report-trx-filename", $"Win-E2E_{framework}_results.trx")
                     .SetResultsDirectory("./TestResults/"));
             }
         });
