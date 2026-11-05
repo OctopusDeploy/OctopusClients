@@ -13,6 +13,9 @@ using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Operations;
 
+// This fixture deliberately covers the deprecated RegisterKubernetesClusterOperation and its deprecated EnvironmentNames property,
+// which are still shipped. RegisterKubernetesDeploymentTargetOperationFixture covers the replacement.
+#pragma warning disable CS0618
 namespace Octopus.Client.Tests.Operations
 {
     [TestFixture]
@@ -256,3 +259,4 @@ namespace Octopus.Client.Tests.Operations
         }
     }
 }
+#pragma warning restore CS0618

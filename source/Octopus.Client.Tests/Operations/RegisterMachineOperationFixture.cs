@@ -16,11 +16,13 @@ using Octopus.Client.Operations;
 namespace Octopus.Client.Tests.Operations
 {
     [TestFixture]
-    public class RegisterMachineOperationFixture
+    public partial class RegisterMachineOperationFixture
     {
         RegisterMachineOperation operation;
         IOctopusAsyncClient client;
         OctopusAsyncRepository repository;
+        IOctopusClient syncClient;
+        OctopusRepository syncRepository;
         ResourceCollection<EnvironmentResource> environments;
         List<ParentEnvironmentV2Resource> parentEnvironments;
         List<EphemeralEnvironmentV2Resource> ephemeralEnvironments;
@@ -80,34 +82,41 @@ namespace Octopus.Client.Tests.Operations
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachinePolicyResource>, bool>>()(machinePolicies));
 
             client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<CancellationToken>())
-                .Returns(ci =>
-                {
-                    var items = environments.Items
-                        .Select(e => (BaseEnvironmentV2Resource)new StaticEnvironmentV2Resource { Id = e.Id, Name = e.Name, Slug = e.Slug })
-                        .Concat(parentEnvironments)
-                        .Concat(ephemeralEnvironments)
-                        .ToList();
-                    return new PaginatedCollection<BaseEnvironmentV2Resource> { TotalResults = items.Count, Items = items };
-                });
+                .Returns(_ => AllEnvironmentsV2());
+
+            SetupSyncClient(rootDocument, spaceRootDocument, someSpace);
         }
 
-        [Test]
-        public async Task ShouldThrowIfEnvironmentNameNotFound()
+        // This will be removed once we stop supporting the non-async version of the Client
+        void SetupSyncClient(RootResource rootDocument, SpaceRootResource spaceRootDocument, SpaceResource space)
         {
-            operation.EnvironmentNames = new[] { "Atlantis" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
-            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            syncClient = Substitute.For<IOctopusClient>();
+            syncClient.Get<RootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(rootDocument);
+            syncClient.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(spaceRootDocument);
+
+            syncRepository = new OctopusRepository(syncClient, RepositoryScope.ForSpace(space));
+
+            syncClient.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));
+            syncClient.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<TenantResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<TenantResource>, bool>>()(tenants));
+            syncClient.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<MachineResource>, bool>>()(machines));
+            syncClient.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachinePolicyResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<MachinePolicyResource>, bool>>()(machinePolicies));
+
+            syncClient.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(Arg.Any<string>(), Arg.Any<object>())
+                .Returns(_ => AllEnvironmentsV2());
         }
 
-        [Test]
-        public async Task ShouldThrowIfEnvironmentNameNotFoundEvenWhenEnvironmentsHasValid()
+        PaginatedCollection<BaseEnvironmentV2Resource> AllEnvironmentsV2()
         {
-            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
-
-            operation.EnvironmentNames = new[] { "Atlantis" };
-            operation.Environments = new[] { "Production" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
-            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            var items = environments.Items
+                .Select(e => (BaseEnvironmentV2Resource)new StaticEnvironmentV2Resource { Id = e.Id, Name = e.Name, Slug = e.Slug })
+                .Concat(parentEnvironments)
+                .Concat(ephemeralEnvironments)
+                .ToList();
+            return new PaginatedCollection<BaseEnvironmentV2Resource> { TotalResults = items.Count, Items = items };
         }
 
         [Test]
@@ -124,16 +133,6 @@ namespace Octopus.Client.Tests.Operations
             operation.Environments = new[] { "Environments-12345", "atlantis-slug" };
             Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments with names, slugs or Ids: Environments-12345, atlantis-slug on the Octopus Server. Ensure the environments exist and you have permission to access them.");
-        }
-
-        [Test]
-        public async Task ShouldThrowIfAnyEnvironmentNotFound()
-        {
-            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
-
-            operation.EnvironmentNames = new[] { "Production", "Atlantis", "Hyperborea" };
-            Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
-            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus Server. Ensure the environments exist and you have permission to access them.");
         }
 
         [Test]
@@ -169,7 +168,7 @@ namespace Octopus.Client.Tests.Operations
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "Production" };
+            operation.Environments = new[] { "Production" };
 
             await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
@@ -194,7 +193,7 @@ namespace Octopus.Client.Tests.Operations
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "Production" };
+            operation.Environments = new[] { "Production" };
 
             Func<Task> exec = () => operation.ExecuteAsync(repository, CancellationToken.None);
             await exec.Should().ThrowAsync<ArgumentException>();
@@ -213,7 +212,7 @@ namespace Octopus.Client.Tests.Operations
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "Production" };
+            operation.Environments = new[] { "Production" };
             operation.AllowOverwrite = true;
 
             await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
@@ -239,7 +238,7 @@ namespace Octopus.Client.Tests.Operations
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "Production" };
+            operation.Environments = new[] { "Production" };
 
             await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
 
@@ -263,7 +262,7 @@ namespace Octopus.Client.Tests.Operations
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "Production" };
+            operation.Environments = new[] { "Production" };
             operation.AllowOverwrite = true;
 
             await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
@@ -289,7 +288,7 @@ namespace Octopus.Client.Tests.Operations
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "Production" };
+            operation.Environments = new[] { "Production" };
             operation.AllowOverwrite = true;
             operation.MachinePolicy = "Machine Policy 2";
 
@@ -301,30 +300,6 @@ namespace Octopus.Client.Tests.Operations
                 && m.EnvironmentIds.First() == "environments-2"
                 && m.MachinePolicyId == "MachinePolicies-2"),
                 Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
-        }
-
-        [Test]
-        public async Task ShouldDeduplicateEnvironments()
-        {
-            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Slug = "env-uat", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
-            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
-
-            operation.TentacleThumbprint = "ABCDEF";
-            operation.TentaclePort = 10930;
-            operation.MachineName = "Mymachine";
-            operation.TentacleHostname = "Mymachine.test.com";
-            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] { "UAT" };
-            operation.Environments = new[] { "env-uat", "environments-2" };
-
-            await operation.ExecuteAsync(repository, CancellationToken.None).ConfigureAwait(false);
-
-            await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
-                        m.Name == "Mymachine"
-                        && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
-                        && m.EnvironmentIds.SequenceEqual(new[] { "environments-1", "environments-2" })),
-                    Arg.Any<object>(), Arg.Any<CancellationToken>())
-                .ConfigureAwait(false);
         }
 
         [Test]
@@ -448,6 +423,105 @@ namespace Octopus.Client.Tests.Operations
                     && m.EnvironmentIds.SequenceEqual(new[] { "environments-2" })),
                     Arg.Any<object>(), Arg.Any<CancellationToken>())
                 .ConfigureAwait(false);
+        }
+
+        [Test]
+        public void Sync_ShouldThrowIfEnvironmentNotFoundBySlug()
+        {
+            operation.Environments = new[] { "atlantis-slug" };
+            Action exec = () => operation.Execute(syncRepository);
+            exec.Should().Throw<ArgumentException>().WithMessage("Could not find the environment with name, slug or Id atlantis-slug on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+        }
+
+        [Test]
+        public void Sync_ShouldCreateNewMachine()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.Environments = new[] { "Production" };
+
+            operation.Execute(syncRepository);
+
+            syncClient.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                    m.Name == "Mymachine"
+                    && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
+                    && m.EnvironmentIds.SequenceEqual(new[] { "environments-2" })),
+                Arg.Any<object>());
+        }
+
+        [Test]
+        public void Sync_ShouldUpdateExistingMachineWhenForceIsEnabled()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
+
+            machines.Items.Add(new MachineResource { Id = "machines/84", EnvironmentIds = new ReferenceCollection(new[] { "environments-1" }), Name = "Mymachine", Links = LinkCollection.Self("/machines/whatever/1") });
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.Environments = new[] { "Production" };
+            operation.AllowOverwrite = true;
+
+            operation.Execute(syncRepository);
+
+            syncClient.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
+                    m.Id == "machines/84"
+                    && m.Name == "Mymachine"
+                    && m.EnvironmentIds.SequenceEqual(new[] { "environments-2" })),
+                Arg.Any<object>());
+        }
+
+        [Test]
+        public void Sync_ShouldRegisterAgainstParentAndEphemeralEnvironmentsViaV2()
+        {
+            parentEnvironments.Add(new ParentEnvironmentV2Resource { Id = "environments-parent-1", Name = "Staging", Slug = "staging" });
+            ephemeralEnvironments.Add(new EphemeralEnvironmentV2Resource { Id = "environments-eph-1", Name = "pr-123", Slug = "pr-123", ParentEnvironmentId = "environments-parent-1" });
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.Environments = new[] { "Staging", "pr-123" };
+
+            operation.Execute(syncRepository);
+
+            syncClient.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                    m.Name == "Mymachine"
+                    && m.EnvironmentIds.SequenceEqual(new[] { "environments-parent-1", "environments-eph-1" })),
+                Arg.Any<object>());
+        }
+
+        [Test]
+        public void Sync_ShouldFallBackToV1WhenV2EnvironmentsEndpointNotFound()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
+
+            syncClient.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(Arg.Any<string>(), Arg.Any<object>())
+                .Throws(new OctopusResourceNotFoundException("Not found"));
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.Environments = new[] { "Production" };
+
+            operation.Execute(syncRepository);
+
+            syncClient.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                    m.Name == "Mymachine"
+                    && m.EnvironmentIds.SequenceEqual(new[] { "environments-2" })),
+                Arg.Any<object>());
         }
     }
 }

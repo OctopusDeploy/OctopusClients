@@ -13,6 +13,9 @@ using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Operations;
 
+// These tests set the deprecated EnvironmentNames property because Environments resolves via the space-scoped v2 endpoint,
+// which fails for the unscoped repository that ExecuteAsync(serverEndpoint) creates. Move them to Environments once that's fixed.
+#pragma warning disable CS0618
 namespace Octopus.Client.Tests.Operations
 {
     [TestFixture]
@@ -256,3 +259,4 @@ namespace Octopus.Client.Tests.Operations
         }
     }
 }
+#pragma warning restore CS0618
