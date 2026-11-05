@@ -152,6 +152,10 @@ class Build : NukeBuild
             }
         });
 
+    // The target frameworks of the test projects. Microsoft Testing Platform writes one TRX file per run and the
+    // GitHub workflow finds each framework's results by file name, so each framework runs separately.
+    static readonly string[] TestFrameworks = ["net10.0", "net8.0", "net462", "net48"];
+
     Target Test => _ => _
         .DependsOn(Compile)
         .DependsOn(Merge) // IMPORTANT: Tests must be run _after_ the merge so that we're confident that we're testing the ILMerged code.  -andrewh 14/2/2022.
@@ -159,13 +163,17 @@ class Build : NukeBuild
         {
             RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
             {
-                DotNetTest(_ => _
-                    .SetProjectFile(testProjectFile)
-                    .SetConfiguration(Configuration)
-                    .EnableNoBuild()
-                    .AddProcessAdditionalArguments("/m:1") // force msbuild to only spawn one process at a time, which stops the tests running in parallel (HttpIntegrationTestBase hardcodes a TCP port number so must run sequentially)
-                    .SetLoggers("trx;LogFilePrefix=Win")
-                    .SetResultsDirectory("./TestResults/"));
+                // Run one target framework at a time. HttpIntegrationTestBase hardcodes a TCP port number, so the frameworks must run sequentially.
+                foreach (var framework in TestFrameworks)
+                {
+                    DotNetTest(_ => _
+                        .AddProcessAdditionalArguments("--project", testProjectFile)
+                        .SetFramework(framework)
+                        .SetConfiguration(Configuration)
+                        .EnableNoBuild()
+                        .AddProcessAdditionalArguments("--report-trx", "--report-trx-filename", $"Win_{framework}.trx")
+                        .SetResultsDirectory("./TestResults/"));
+                }
             });
         });
 
@@ -249,12 +257,16 @@ class Build : NukeBuild
         .Executes(() =>
         {
             // Tests that make sure the packed, ILMerged DLL we're going to ship actually works the way we expect it to.
-            DotNetTest(_ => _
-                .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
-                .SetConfiguration(Configuration)
-                .EnableNoBuild()
-                .SetLoggers("trx;LogFilePrefix=Win-E2E")
-                .SetResultsDirectory("./TestResults/"));
+            foreach (var framework in TestFrameworks)
+            {
+                DotNetTest(_ => _
+                    .AddProcessAdditionalArguments("--project", SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
+                    .SetFramework(framework)
+                    .SetConfiguration(Configuration)
+                    .EnableNoBuild()
+                    .AddProcessAdditionalArguments("--report-trx", "--report-trx-filename", $"Win-E2E_{framework}.trx")
+                    .SetResultsDirectory("./TestResults/"));
+            }
         });
 
     [PublicAPI]
