@@ -30,5 +30,7 @@ namespace Octopus.Client.Model.Endpoints
         public string HelmReleaseName { get; set; }
 
         public string KubernetesNamespace { get; set; }
+
+        public string StorageClassName { get; set; }
     }
 }

@@ -7735,6 +7735,7 @@ Octopus.Client.Model.Endpoints
     String AgentVersion { get; set; }
     String HelmReleaseName { get; set; }
     String KubernetesNamespace { get; set; }
+    String StorageClassName { get; set; }
     String TentacleVersion { get; set; }
     Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeStatus { get; set; }
   }
