@@ -115,5 +115,17 @@ namespace Octopus.Client.Model
         public IList<string> Tenants { get; set; }
         public IList<string> Tags { get; set; }
         public IList<string> DocumentTypes { get; set; }
+
+#nullable enable
+        /// <summary>
+        /// Only match events from these API keys. Leave unset to keep the subscription's current API keys when modifying it.
+        /// </summary>
+        public ReferenceCollection? ApiKeyIds { get; set; }
+
+        /// <summary>
+        /// Only match events by AI agents. Leave unset to keep the subscription's current setting when modifying it.
+        /// </summary>
+        public bool? AiEventsOnly { get; set; }
+#nullable restore
     }
 }

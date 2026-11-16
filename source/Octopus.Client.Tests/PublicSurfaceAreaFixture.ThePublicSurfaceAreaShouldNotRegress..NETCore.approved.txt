@@ -3363,6 +3363,8 @@ Octopus.Client.Model
   class EventNotificationSubscriptionFilter
   {
     .ctor()
+    Nullable<Boolean> AiEventsOnly { get; set; }
+    Octopus.Client.Model.ReferenceCollection ApiKeyIds { get; set; }
     IList<String> DocumentTypes { get; set; }
     IList<String> Environments { get; set; }
     IList<String> EventAgents { get; set; }
