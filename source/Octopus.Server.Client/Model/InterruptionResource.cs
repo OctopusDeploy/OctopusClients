@@ -79,8 +79,9 @@ namespace Octopus.Client.Model
         public string ResponsibleUserActorType { get; set; }
 
         /// <summary>
-        /// The agent client (such as an MCP client) the responsible user acted through, typically in the same form as OAuth client.
-        /// Null for other kinds of credential.
+        /// The name of the AI tool (such as an MCP client) the responsible user acted through. For an OAuth connection, this is
+        /// the OAuth client name. For an AI agent API key, this is the name the tool reported, which Octopus can't verify.
+        /// Null when the responsible user didn't act through an AI tool.
         /// </summary>
         [JsonProperty(Order = 32)]
         public string ResponsibleUserActor { get; set; }
