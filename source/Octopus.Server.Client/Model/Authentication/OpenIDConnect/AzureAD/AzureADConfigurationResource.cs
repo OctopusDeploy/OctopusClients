@@ -22,5 +22,10 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
         [Category("SCIM")]
         [Writeable]
         public bool? ScimEnabled { get; set; }
+
+        [DisplayName("Require Email Domain Verified Claim")]
+        [Description("Reject a sign-in unless the security token has an email address and an xms_edov claim. Add email and xms_edov as optional claims to your app registration's ID token")]
+        [Writeable]
+        public bool? RequireEmailDomainVerifiedClaim { get; set; }
     }
 }

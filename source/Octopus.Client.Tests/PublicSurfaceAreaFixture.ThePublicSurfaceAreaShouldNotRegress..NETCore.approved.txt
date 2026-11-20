@@ -7269,6 +7269,7 @@ Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
     Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
   {
     .ctor()
+    Nullable<Boolean> RequireEmailDomainVerifiedClaim { get; set; }
     String RoleClaimType { get; set; }
     Nullable<Boolean> ScimEnabled { get; set; }
   }
@@ -7281,6 +7282,8 @@ Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
   {
     .ctor()
     String DisplayName { get; set; }
+    Nullable<Boolean> RequireEmailDomainVerifiedClaim { get; set; }
+    Nullable<Boolean> RequireEmailVerifiedClaim { get; set; }
     String Resource { get; set; }
     String RoleClaimType { get; set; }
     String[] Scopes { get; set; }
@@ -7295,6 +7298,7 @@ Octopus.Client.Model.Authentication.OpenIDConnect.GoogleApps
   {
     .ctor()
     String HostedDomain { get; set; }
+    Nullable<Boolean> RequireEmailVerifiedClaim { get; set; }
   }
 }
 Octopus.Client.Model.Authentication.OpenIDConnect.OctopusID
@@ -7317,6 +7321,7 @@ Octopus.Client.Model.Authentication.OpenIDConnect.Okta
     Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
   {
     .ctor()
+    Nullable<Boolean> RequireEmailVerifiedClaim { get; set; }
     String RoleClaimType { get; set; }
     String UsernameClaimType { get; set; }
   }

@@ -16,5 +16,10 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GoogleApps
         [Description("Tell Octopus which Google Apps domain to trust")]
         [Writeable]
         public string? HostedDomain { get; set; }
+
+        [DisplayName("Require Email Verified Claim")]
+        [Description("Reject a sign-in unless the security token has an email address and an email_verified claim. Only turn this off if your identity provider doesn't send both")]
+        [Writeable]
+        public bool? RequireEmailVerifiedClaim { get; set; }
     }
 }

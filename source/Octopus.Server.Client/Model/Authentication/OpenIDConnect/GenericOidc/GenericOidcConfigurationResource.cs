@@ -37,5 +37,15 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
         [Description("The name to show on the login page. May contain only be letters, numbers, hyphens or spaces. Defaults to \"OpenID Connect\" if left blank.")]
         [Writeable]
         public string? DisplayName { get; set; }
+
+        [DisplayName("Require Email Verified Claim")]
+        [Description("Reject a sign-in unless the security token has an email address and an email_verified claim. Only turn this off if your identity provider doesn't send both")]
+        [Writeable]
+        public bool? RequireEmailVerifiedClaim { get; set; }
+
+        [DisplayName("Require Email Domain Verified Claim")]
+        [Description("Reject a sign-in unless the security token has an email address and an xms_edov claim. Turn this on for Microsoft Entra ID, and turn off Require Email Verified Claim, which Entra ID doesn't send. Add email and xms_edov as optional claims to your app registration's ID token")]
+        [Writeable]
+        public bool? RequireEmailDomainVerifiedClaim { get; set; }
     }
 }
