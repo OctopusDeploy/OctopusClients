@@ -20,5 +20,9 @@ namespace Octopus.Client.Model
         [Trim]
         [Writeable]
         public string Region { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string Endpoint { get; set; }
     }
 }
