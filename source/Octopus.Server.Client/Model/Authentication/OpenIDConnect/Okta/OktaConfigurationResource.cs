@@ -18,12 +18,12 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.Okta
         public string? RoleClaimType { get; set; }
 
         [DisplayName("Username Claim Type")]
-        [Description("Tell Octopus how to find the value for the Octopus Username in the Okta token. Defaults to \"preferred_username\" if left blank.")]
+        [Description("Tell Octopus how to find the value for a new user's Octopus Username in the Okta token, while Require Email Verified Claim is off. Defaults to \"preferred_username\" if left blank.")]
         [Writeable]
         public string? UsernameClaimType { get; set; }
 
         [DisplayName("Require Email Verified Claim")]
-        [Description("Reject a sign-in unless the security token has an email address and an email_verified claim. Only turn this off if your identity provider doesn't send both")]
+        [Description("Reject a sign-in unless the security token has an email address and an email_verified claim. Only turn this off if your identity provider doesn't send both. While it's on, a new user's Username is their verified email address rather than the Username Claim Type's value")]
         [Writeable]
         public bool? RequireEmailVerifiedClaim { get; set; }
     }

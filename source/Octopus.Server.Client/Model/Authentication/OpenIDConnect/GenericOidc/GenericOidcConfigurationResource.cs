@@ -19,7 +19,7 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
         public string? RoleClaimType { get; set; }
 
         [DisplayName("Username Claim Type")]
-        [Description("Tell Octopus how to find the value for the Octopus Username in the OIDC token. Defaults to \"preferred_username\".")]
+        [Description("Tell Octopus how to find the value for a new user's Octopus Username in the OIDC token, while Require Email Verified Claim and Require Email Domain Verified Claim are off. Defaults to \"preferred_username\".")]
         [Writeable]
         public string? UsernameClaimType { get; set; }
 
@@ -39,12 +39,12 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
         public string? DisplayName { get; set; }
 
         [DisplayName("Require Email Verified Claim")]
-        [Description("Reject a sign-in unless the security token has an email address and an email_verified claim. Only turn this off if your identity provider doesn't send both")]
+        [Description("Reject a sign-in unless the security token has an email address and an email_verified claim. Only turn this off if your identity provider doesn't send both. While it's on, a new user's Username is their verified email address rather than the Username Claim Type's value")]
         [Writeable]
         public bool? RequireEmailVerifiedClaim { get; set; }
 
         [DisplayName("Require Email Domain Verified Claim")]
-        [Description("Reject a sign-in unless the security token has an email address and an xms_edov claim. Turn this on for Microsoft Entra ID, and turn off Require Email Verified Claim, which Entra ID doesn't send. Add email and xms_edov as optional claims to your app registration's ID token")]
+        [Description("Reject a sign-in unless the security token has an email address and an xms_edov claim. Turn this on for Microsoft Entra ID, and turn off Require Email Verified Claim, which Entra ID doesn't send. Add email and xms_edov as optional claims to your app registration's ID token. While it's on, a new user's Username is their verified email address rather than the Username Claim Type's value")]
         [Writeable]
         public bool? RequireEmailDomainVerifiedClaim { get; set; }
     }
