@@ -316,6 +316,13 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
+        // TEMPORARY (MTP experiment): the Key Vault client secret is invalid, so allow skipping signing. Revert before merging.
+        if (Environment.GetEnvironmentVariable("OCTOPUS_SKIP_SIGNING") == "true")
+        {
+            Log.Warning($"Not signing binaries in {path}, because OCTOPUS_SKIP_SIGNING is set");
+            return;
+        }
+
         Log.Information($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 

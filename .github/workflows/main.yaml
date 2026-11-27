@@ -58,6 +58,10 @@ jobs:
       - name: Nuke Build 🏗
         id: build
         shell: bash
+        # TEMPORARY (MTP experiment): the Key Vault client secret is invalid (AADSTS7000215), so don't sign the
+        # binaries. Revert before merging.
+        env:
+          OCTOPUS_SKIP_SIGNING: "true"
         run: ./build.cmd
 
       # Unit test reports
@@ -159,6 +163,8 @@ jobs:
       OCTOPUS_SPACE: "Core Platform"
       SHOULD_CREATE_RELEASE: ${{ github.ref == 'refs/heads/master' && !contains(needs.build.outputs.octoversion_fullsemver, '-') }}
     needs: [ build, test-linux ]
+    # TEMPORARY (MTP experiment): the packages aren't signed, so never deploy them. Revert before merging.
+    if: false
     # Ensure runs that should create a release don't collide (this condition must match SHOULD_CREATE_RELEASE)
     concurrency:
       group: ${{ github.ref == 'refs/heads/master' && !contains(needs.build.outputs.octoversion_fullsemver, '-') && 'octopus-client-release' || format('octopus-client-deploy-{0}', github.run_id) }}
